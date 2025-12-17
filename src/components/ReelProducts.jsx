@@ -72,7 +72,7 @@ const ReelProducts = () => {
   };
 
   return (
-    <div className="relative w-full py-10 ">
+    <div className="relative w-full py-10 px-4">
       <h2 className="text-3xl font-bold text-center mb-6">
         Premium Candle Collection
       </h2>
