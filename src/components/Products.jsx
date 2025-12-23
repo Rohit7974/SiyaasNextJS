@@ -113,9 +113,10 @@ const Products = () => {
                 </span>
               </div>
 
-              <button className="mt-auto w-full bg-[#8B5A2B] text-white py-3 rounded-md tracking-wide hover:bg-gray-800 transition">
-                ADD TO CART
-              </button>
+             <button className="mt-auto w-full bg-[#8B5A2B] text-white py-2 px-4 rounded tracking-tight text-sm hover:bg-[#7A4920] transition-all duration-200 shadow-sm">
+  Buy Now
+</button>
+
 
             </div>
           ))}
