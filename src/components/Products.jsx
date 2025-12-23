@@ -57,10 +57,20 @@ const Products = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-10">
           {products.map((product) => (
             <div
-              key={product.id}
-              className="text-center cursor-pointer group flex flex-col"
-              onClick={() => router.push(`/products/${product.id}`)}
-            >
+  key={product.id}
+  className="
+    text-center cursor-pointer group flex flex-col
+    border border-gray-200/60
+    rounded-xl
+    p-3
+    transition-all duration-300
+    hover:border-gray-300
+    hover:shadow-[0_4px_20px_rgba(0,0,0,0.05)]
+
+  "
+  onClick={() => router.push(`/products/${product.id}`)}
+>
+
 
               <div className="w-full aspect-square rounded-lg overflow-hidden relative mb-4 md:mb-6">
 

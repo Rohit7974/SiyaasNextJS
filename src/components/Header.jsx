@@ -408,155 +408,146 @@ import { COLORS } from "@/constants/colors";
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [showTopBtn, setShowTopBtn] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 56);
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 56);
+      setShowTopBtn(window.scrollY > 300);
+    };
+
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const navItems = ["Home", "Products", "About", "Contact"];
 
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
-    <header
-      className={`
-        fixed left-0 w-full transition-all duration-300 backdrop-blur-xl
-        ${isScrolled ? "top-0 shadow-sm z-50" : "top-12 bg-transparent z-40"}
-      `}
-      style={isScrolled ? { backgroundColor: COLORS.white } : {}}
-    >
-      <div className="max-w-7xl mx-auto px-6 lg:px-10 py-6 flex items-center justify-between relative">
+    <>
+      <header
+        className={`
+          fixed left-0 w-full transition-all duration-300 backdrop-blur-xl
+          ${isScrolled ? "top-0 shadow-sm z-50" : "top-12 bg-transparent z-40"}
+        `}
+        style={isScrolled ? { backgroundColor: COLORS.white } : {}}
+      >
+        <div className="max-w-7xl mx-auto px-6 lg:px-10 py-6 flex items-center justify-between relative">
 
-        {/* Mobile menu button */}
-        <button
-  className={`px-2 md:hidden absolute left-0 transition-colors
-    ${isScrolled ? "text-black" : "text-white"}
-  `}
->
+        
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className={`md:hidden absolute left-0 px-2 transition-colors
+              ${isScrolled ? "text-black" : "text-white"}
+            `}
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
 
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-              d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-        </button>
+          
+          <nav className="hidden md:flex items-center gap-10 mr-auto">
+            {navItems.map((item) => (
+              <Link
+                key={item}
+                href={`#${item.toLowerCase()}`}
+                className={`
+                  text-sm font-light tracking-widest transition-all
+                  ${isScrolled
+                    ? "text-black hover:text-gray-600"
+                    : "text-white/80 hover:text-white"}
+                `}
+              >
+                {item}
+              </Link>
+            ))}
+          </nav>
 
-        {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-10 mr-auto">
-          {navItems.map((item) => (
-            <Link
-              key={item}
-              href={`#${item.toLowerCase()}`}
-              className={`
-                text-sm font-light tracking-widest transition-all duration-300
-                ${isScrolled ? "text-black hover:text-gray-600" : "text-white/80 hover:text-white"}
-              `}
-            >
-              {item}
-            </Link>
-          ))}
-        </nav>
+        
+          <div className="absolute left-1/2 -translate-x-1/2">
+            <img
+              src="/siyaas-removebg-preview.png"
+              alt="Siya logo"
+              className="w-24 object-contain cursor-pointer hover:opacity-90 transition-opacity"
+            />
+          </div>
 
-        {/* Logo */}
-        <div className="flex items-center justify-center mx-auto pointer-events-none absolute left-1/2 -translate-x-1/2">
-          <div className="flex items-center gap-3 pointer-events-auto">
-            <div className="flex items-center justify-center w-20 ">
-              <img
-                src="/siyaas-removebg-preview.png"
-                alt="Siya logo"
-                className="w-24 object-contain cursor-pointer hover:opacity-90 transition-opacity"
-              />
-            </div>
-            {/* <span className="tracking-[0.2em] text-sm font-light uppercase text-white">
-              SIYA
-            </span> */}
-            
+      
+          <div className="flex items-center gap-6 ml-auto">
+            {["search", "user", "cart"].map((_, i) => (
+              <button
+                key={i}
+                className={`transition-colors
+                  ${isScrolled
+                    ? "text-black hover:text-gray-600"
+                    : "text-white hover:text-gray-200"}
+                `}
+              >
+             
+                {i === 0 && (
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                  </svg>
+                )}
+                {i === 1 && (
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="7" r="4" />
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  </svg>
+                )}
+                {i === 2 && (
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="9" cy="21" r="1" />
+                    <circle cx="20" cy="21" r="1" />
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+                  </svg>
+                )}
+              </button>
+            ))}
           </div>
         </div>
 
-        <div className="flex items-center gap-4 md:gap-6 ml-auto">
+     
+        {isOpen && (
+          <div className="md:hidden backdrop-blur-xl bg-black/40">
+            {navItems.map((item) => (
+              <Link
+                key={item}
+                href={`#${item.toLowerCase()}`}
+                className="block px-6 py-4 text-sm tracking-widest text-white hover:bg-white/10"
+                onClick={() => setIsOpen(false)}
+              >
+                {item}
+              </Link>
+            ))}
+          </div>
+        )}
+      </header>
 
-
-  {/* Search */}
-  <button
-    className={`transition-colors
-      ${isScrolled ? "text-black hover:text-gray-600" : "text-white hover:text-gray-200"}
-    `}
-  >
-    <svg
-      className="w-5 h-5"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="11" cy="11" r="8" />
-      <line x1="21" y1="21" x2="16.65" y2="16.65" />
-    </svg>
-  </button>
-
-  {/* User */}
-  <button
-    className={`transition-colors
-      ${isScrolled ? "text-black hover:text-gray-600" : "text-white hover:text-gray-200"}
-    `}
-  >
-    <svg
-      className="w-5 h-5"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-      <circle cx="12" cy="7" r="4" />
-    </svg>
-  </button>
-
-  {/* Cart */}
-  <button
-    className={`relative transition-colors
-      ${isScrolled ? "text-black hover:text-gray-600" : "text-white hover:text-gray-200"}
-    `}
-  >
-    <svg
-      className="w-5 h-5"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="9" cy="21" r="1" />
-      <circle cx="20" cy="21" r="1" />
-      <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-    </svg>
-  </button>
-
-</div>
-
-      </div>
-
-      {/* Mobile menu */}
-      {isOpen && (
-        <div className="md:hidden bg-white/95 border-t border-slate-100">
-          {navItems.map((item) => (
-            <Link
-              key={item}
-              href={`#${item.toLowerCase()}`}
-              className="block px-6 py-3 text-sm text-slate-800 hover:bg-slate-50"
-              onClick={() => setIsOpen(false)}
-            >
-              {item}
-            </Link>
-          ))}
-        </div>
+      
+      {showTopBtn && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-6 right-6 z-50 p-3 rounded-full bg-black/80 text-white hover:bg-black transition-all"
+        >
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+          </svg>
+        </button>
       )}
-    </header>
+    </>
   );
 };
 

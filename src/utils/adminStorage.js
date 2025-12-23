@@ -1,4 +1,4 @@
-// Client-side storage helpers for admin panel (uses localStorage)
+// admin pasword is admin123
 export const PRODUCTS_KEY = "siya_admin_products";
 export const CATEGORIES_KEY = "siya_admin_categories";
 
