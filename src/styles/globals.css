@@ -3,9 +3,15 @@
 @tailwind components;
 @tailwind utilities;
 
+
 :root {
-  /* --background: #ffffff; */
-  /* --foreground: #171717; */
+  
+  --font-main: 'Playfair Display', serif;  /* Main heading font - Change this to switch all main fonts */
+  --font-sub: 'Inter', sans-serif;         /* Subtext font - Change this to switch all subtext fonts */
+  --font-size-main: 2.25rem;              /* Main font size - 36px */
+  --font-size-sub: 0.875rem;              /* Sub font size - 14px */
+  --font-weight-main: 700;                 /* Main font weight - bold */
+  --font-weight-sub: 400;                  /* Sub font weight - regular */
 }
 
 @theme inline {
@@ -35,14 +41,58 @@
   }
 }
 
-/* Create animation utility */
+
 @utility animate-marquee {
   animation: var(--animate-marquee);
 }
+
+
+.text-main {
+  font-family: var(--font-main);
+  font-size: var(--font-size-main);
+  font-weight: var(--font-weight-main);
+}
+
+.text-sub {
+  font-family: var(--font-sub);
+  font-size: var(--font-size-sub);
+  font-weight: var(--font-weight-sub);
+}
+
+.heading-1 {
+  font-family: var(--font-main);
+  font-size: 3rem;
+  font-weight: 800;
+}
+
+.heading-2 {
+  font-family: var(--font-main);
+  font-size: 2.25rem;
+  font-weight: 700;
+}
+
+.heading-3 {
+  font-family: var(--font-main);
+  font-size: 1.875rem;
+  font-weight: 700;
+}
+
+.body-text {
+  font-family: var(--font-sub);
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+.small-text {
+  font-family: var(--font-sub);
+  font-size: var(--font-size-sub);
+  font-weight: 400;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sub);
 }
 
 .scrollbar-hide::-webkit-scrollbar {

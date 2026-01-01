@@ -1,357 +1,592 @@
+// // "use client";
+
+// // import React, { useEffect, useState } from "react";
+// // import { getProducts, saveProducts, getCategories, saveCategories } from "@/utils/adminStorage";
+// // import { COLORS } from "@/constants/colors";
+
+// // export default function AdminPanel() {
+// //   const [isAdmin, setIsAdmin] = useState(false);
+// //   const [password, setPassword] = useState("");
+// //   const [products, setProducts] = useState([]);
+// //   const [categories, setCategories] = useState([]);
+
+ 
+// //   const [name, setName] = useState("");
+// //   const [desc, setDesc] = useState("");
+// //   const [price, setPrice] = useState("");
+// //   const [category, setCategory] = useState("");
+// //   const [imageData, setImageData] = useState("");
+
+// //   useEffect(() => {
+// //     const ok = typeof window !== "undefined" && sessionStorage.getItem("siya_is_admin") === "true";
+// //     setIsAdmin(Boolean(ok));
+// //     setProducts(getProducts());
+// //     setCategories(getCategories());
+// //   }, []);
+
+// //   function handleLogin(e) {
+// //     e.preventDefault();
+// //     const envPass = process.env.NEXT_PUBLIC_ADMIN_PASS || "admin123";
+// //     if (password === envPass) {
+// //       sessionStorage.setItem("siya_is_admin", "true");
+// //       setIsAdmin(true);
+// //     } else {
+// //       alert("Incorrect password");
+// //     }
+// //   }
+
+// //   function handleImageUpload(file) {
+// //     if (!file) return;
+// //     const reader = new FileReader();
+// //     reader.onload = () => setImageData(reader.result);
+// //     reader.readAsDataURL(file);
+// //   }
+
+// //   function addCategory(e) {
+// //     e.preventDefault();
+// //     if (!category) return;
+// //     const next = Array.from(new Set([...categories, category]));
+// //     setCategories(next);
+// //     saveCategories(next);
+// //     setCategory("");
+// //   }
+
+// //   function addProduct(e) {
+// //     e.preventDefault();
+// //     const prod = {
+// //       id: Date.now(),
+// //       name,
+// //       description: desc,
+// //       price,
+// //       category: category || (categories[0] || "default"),
+// //       image: imageData,
+// //       reviews: [],
+// //     };
+// //     const next = [prod, ...products];
+// //     setProducts(next);
+// //     saveProducts(next);
+// //     setName("");
+// //     setDesc("");
+// //     setPrice("");
+// //     setImageData("");
+// //   }
+
+// //   function removeProduct(id) {
+// //     const next = products.filter((p) => p.id !== id);
+// //     setProducts(next);
+// //     saveProducts(next);
+// //   }
+
+// //   if (!isAdmin) {
+// //     return (
+// //       <div className="min-h-screen flex items-center justify-center">
+// //         <form onSubmit={handleLogin} className="p-8 rounded shadow max-w-sm w-full">
+// //           <h2 className="text-xl font-semibold mb-4">Admin Login</h2>
+// //           <input
+// //             value={password}
+// //             onChange={(e) => setPassword(e.target.value)}
+// //             placeholder="Enter admin password"
+// //             className="w-full p-2 border rounded mb-3"
+// //             type="password"
+// //           />
+// //           <button type="submit" className="w-full py-2 rounded text-white" style={{ backgroundColor: COLORS.primary }}>
+// //             Unlock
+// //           </button>
+// //           <p className="text-xs text-gray-500 mt-3">Set env var NEXT_PUBLIC_ADMIN_PASS to change the password.</p>
+// //         </form>
+// //       </div>
+// //     );
+// //   }
+
+// //   return (
+// //     <div className="min-h-screen py-10">
+// //       <div className="max-w-5xl mx-auto">
+// //         <h1 className="text-2xl font-semibold mb-6">Admin Panel</h1>
+
+// //         <section className="mb-6 p-4 border rounded">
+// //           <h2 className="font-medium mb-3">Categories</h2>
+// //           <form onSubmit={addCategory} className="flex gap-2">
+// //             <input value={category} onChange={(e) => setCategory(e.target.value)} placeholder="Category name" className="p-2 border rounded flex-1" />
+// //             <button className="px-4 rounded text-white" style={{ backgroundColor: COLORS.primary }}>Add</button>
+// //           </form>
+// //           <div className="mt-3 flex gap-2 flex-wrap">
+// //             {categories.map((c) => (
+// //               <span key={c} className="px-3 py-1 bg-gray-100 rounded text-sm">{c}</span>
+// //             ))}
+// //           </div>
+// //         </section>
+
+// //         <section className="mb-6 p-4 border rounded">
+// //           <h2 className="font-medium mb-3">Add Product</h2>
+// //           <form onSubmit={addProduct} className="grid grid-cols-1 gap-3">
+// //             <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Product name" className="p-2 border rounded" />
+// //             <textarea value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="Description" className="p-2 border rounded" />
+// //             <input value={price} onChange={(e) => setPrice(e.target.value)} placeholder="Price" className="p-2 border rounded" />
+// //             <select value={category} onChange={(e) => setCategory(e.target.value)} className="p-2 border rounded">
+// //               <option value="">Select category</option>
+// //               {categories.map((c) => (
+// //                 <option key={c} value={c}>{c}</option>
+// //               ))}
+// //             </select>
+// //             <div>
+// //               <input
+// //                 type="file"
+// //                 accept="image/*"
+// //                 onChange={(e) => handleImageUpload(e.target.files?.[0])}
+// //               />
+// //               {imageData && <img src={imageData} alt="preview" className="mt-2 w-32 h-32 object-cover" />}
+// //             </div>
+// //             <button className="py-2 rounded text-white w-32" style={{ backgroundColor: COLORS.primary }}>Save product</button>
+// //           </form>
+// //         </section>
+
+// //         <section className="p-4 border rounded">
+// //           <h2 className="font-medium mb-3">Products ({products.length})</h2>
+// //           <div className="grid grid-cols-1 gap-3">
+// //             {products.map((p) => (
+// //               <div key={p.id} className="p-3 border rounded flex items-center gap-4">
+// //                 <div className="w-20 h-20 bg-gray-50 flex items-center justify-center">
+// //                   {p.image ? <img src={p.image} className="w-full h-full object-cover" /> : <div className="text-xs text-gray-400">No image</div>}
+// //                 </div>
+// //                 <div className="flex-1">
+// //                   <div className="font-medium">{p.name}</div>
+// //                   <div className="text-sm text-gray-600">{p.description}</div>
+// //                   <div className="text-sm mt-1">Price: ₹{p.price} • {p.category}</div>
+// //                 </div>
+// //                 <div className="flex flex-col gap-2">
+// //                   <button onClick={() => removeProduct(p.id)} className="px-3 py-1 rounded text-white" style={{ backgroundColor: COLORS.primary }}>Delete</button>
+// //                 </div>
+// //               </div>
+// //             ))}
+// //           </div>
+// //         </section>
+// //       </div>
+// //     </div>
+// //   );
+// // }
 // "use client";
 
 // import React, { useEffect, useState } from "react";
-// import { getProducts, saveProducts, getCategories, saveCategories } from "@/utils/adminStorage";
+// import { getProducts, saveProducts } from "@/utils/adminStorage";
 // import { COLORS } from "@/constants/colors";
 
 // export default function AdminPanel() {
 //   const [isAdmin, setIsAdmin] = useState(false);
 //   const [password, setPassword] = useState("");
-//   const [products, setProducts] = useState([]);
-//   const [categories, setCategories] = useState([]);
 
- 
+//   const [products, setProducts] = useState([]);
+
+//   /* BASIC */
 //   const [name, setName] = useState("");
-//   const [desc, setDesc] = useState("");
-//   const [price, setPrice] = useState("");
+//   const [sku, setSku] = useState("");
+//   const [slug, setSlug] = useState("");
+//   const [description, setDescription] = useState("");
 //   const [category, setCategory] = useState("");
-//   const [imageData, setImageData] = useState("");
+//   const [brand, setBrand] = useState("");
+
+//   /* VARIANT */
+//   const [price, setPrice] = useState("");
+//   const [mrp, setMrp] = useState("");
+//   const [stock, setStock] = useState("");
+//   const [weight, setWeight] = useState("");
+
+//   /* SPECIFICATIONS */
+//   const [wax, setWax] = useState("");
+//   const [wick, setWick] = useState("");
+//   const [burnTime, setBurnTime] = useState("");
+//   const [container, setContainer] = useState("");
+//   const [fragrance, setFragrance] = useState("");
+//   const [madeIn, setMadeIn] = useState("");
+
+//   /* SAFETY */
+//   const [childSafe, setChildSafe] = useState(false);
+//   const [petSafe, setPetSafe] = useState(false);
+//   const [flammable, setFlammable] = useState(true);
+
+//   /* CARE */
+//   const [ingredients, setIngredients] = useState("");
+//   const [care, setCare] = useState("");
+
+//   /* MEDIA */
+//   const [images, setImages] = useState([]);
+//   const [video, setVideo] = useState("");
 
 //   useEffect(() => {
-//     const ok = typeof window !== "undefined" && sessionStorage.getItem("siya_is_admin") === "true";
-//     setIsAdmin(Boolean(ok));
+//     setIsAdmin(sessionStorage.getItem("siya_is_admin") === "true");
 //     setProducts(getProducts());
-//     setCategories(getCategories());
 //   }, []);
 
 //   function handleLogin(e) {
 //     e.preventDefault();
-//     const envPass = process.env.NEXT_PUBLIC_ADMIN_PASS || "admin123";
-//     if (password === envPass) {
+//     if (password === (process.env.NEXT_PUBLIC_ADMIN_PASS || "admin123")) {
 //       sessionStorage.setItem("siya_is_admin", "true");
 //       setIsAdmin(true);
-//     } else {
-//       alert("Incorrect password");
-//     }
+//     } else alert("Wrong password");
 //   }
 
-//   function handleImageUpload(file) {
-//     if (!file) return;
-//     const reader = new FileReader();
-//     reader.onload = () => setImageData(reader.result);
-//     reader.readAsDataURL(file);
+//   function handleImageUpload(files) {
+//     Promise.all(
+//       Array.from(files).map(
+//         (file) =>
+//           new Promise((res) => {
+//             const r = new FileReader();
+//             r.onload = () => res(r.result);
+//             r.readAsDataURL(file);
+//           })
+//       )
+//     ).then(setImages);
 //   }
 
-//   function addCategory(e) {
-//     e.preventDefault();
-//     if (!category) return;
-//     const next = Array.from(new Set([...categories, category]));
-//     setCategories(next);
-//     saveCategories(next);
-//     setCategory("");
+//   function handleVideoUpload(file) {
+//     const r = new FileReader();
+//     r.onload = () => setVideo(r.result);
+//     r.readAsDataURL(file);
 //   }
 
 //   function addProduct(e) {
 //     e.preventDefault();
-//     const prod = {
-//       id: Date.now(),
-//       name,
-//       description: desc,
-//       price,
-//       category: category || (categories[0] || "default"),
-//       image: imageData,
-//       reviews: [],
-//     };
-//     const next = [prod, ...products];
-//     setProducts(next);
-//     saveProducts(next);
-//     setName("");
-//     setDesc("");
-//     setPrice("");
-//     setImageData("");
-//   }
 
-//   function removeProduct(id) {
-//     const next = products.filter((p) => p.id !== id);
+//     const product = {
+//       id: Date.now(),
+
+//       sku,
+//       slug: slug || name.toLowerCase().replace(/\s+/g, "-"),
+//       name,
+//       description,
+//       brand,
+//       category: [category],
+
+//       images,
+//       video,
+
+//       variants: [
+//         {
+//           variantId: "default",
+//           size: weight,
+//           price: Number(price),
+//           mrp: Number(mrp),
+//           stock: Number(stock),
+//         },
+//       ],
+
+//       specifications: {
+//         wax,
+//         wick,
+//         burn_time_hours: Number(burnTime),
+//         container,
+//         fragrance_notes: fragrance.split(",").map((f) => f.trim()),
+//         made_in: madeIn,
+//       },
+
+//       ingredients: ingredients.split(",").map((i) => i.trim()),
+//       care_instructions: care.split(",").map((c) => c.trim()),
+
+//       safety: {
+//         child_safe: childSafe,
+//         pet_safe: petSafe,
+//         flammable,
+//       },
+
+//       createdAt: new Date(),
+//     };
+
+//     const next = [product, ...products];
 //     setProducts(next);
 //     saveProducts(next);
+
+//     alert("Product added");
 //   }
 
 //   if (!isAdmin) {
 //     return (
-//       <div className="min-h-screen flex items-center justify-center">
-//         <form onSubmit={handleLogin} className="p-8 rounded shadow max-w-sm w-full">
-//           <h2 className="text-xl font-semibold mb-4">Admin Login</h2>
-//           <input
-//             value={password}
-//             onChange={(e) => setPassword(e.target.value)}
-//             placeholder="Enter admin password"
-//             className="w-full p-2 border rounded mb-3"
-//             type="password"
-//           />
-//           <button type="submit" className="w-full py-2 rounded text-white" style={{ backgroundColor: COLORS.primary }}>
-//             Unlock
-//           </button>
-//           <p className="text-xs text-gray-500 mt-3">Set env var NEXT_PUBLIC_ADMIN_PASS to change the password.</p>
-//         </form>
-//       </div>
+//       <form onSubmit={handleLogin} className="min-h-screen flex items-center justify-center">
+//         <input
+//           type="password"
+//           placeholder="Admin password"
+//           onChange={(e) => setPassword(e.target.value)}
+//         />
+//       </form>
 //     );
 //   }
 
 //   return (
-//     <div className="min-h-screen py-10">
-//       <div className="max-w-5xl mx-auto">
-//         <h1 className="text-2xl font-semibold mb-6">Admin Panel</h1>
+//     <div className="max-w-5xl mx-auto py-10">
+//       <h1 className="text-2xl font-semibold mb-6">Siyaas Admin</h1>
 
-//         <section className="mb-6 p-4 border rounded">
-//           <h2 className="font-medium mb-3">Categories</h2>
-//           <form onSubmit={addCategory} className="flex gap-2">
-//             <input value={category} onChange={(e) => setCategory(e.target.value)} placeholder="Category name" className="p-2 border rounded flex-1" />
-//             <button className="px-4 rounded text-white" style={{ backgroundColor: COLORS.primary }}>Add</button>
-//           </form>
-//           <div className="mt-3 flex gap-2 flex-wrap">
-//             {categories.map((c) => (
-//               <span key={c} className="px-3 py-1 bg-gray-100 rounded text-sm">{c}</span>
-//             ))}
-//           </div>
-//         </section>
+//       <form onSubmit={addProduct} className="grid gap-3">
 
-//         <section className="mb-6 p-4 border rounded">
-//           <h2 className="font-medium mb-3">Add Product</h2>
-//           <form onSubmit={addProduct} className="grid grid-cols-1 gap-3">
-//             <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Product name" className="p-2 border rounded" />
-//             <textarea value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="Description" className="p-2 border rounded" />
-//             <input value={price} onChange={(e) => setPrice(e.target.value)} placeholder="Price" className="p-2 border rounded" />
-//             <select value={category} onChange={(e) => setCategory(e.target.value)} className="p-2 border rounded">
-//               <option value="">Select category</option>
-//               {categories.map((c) => (
-//                 <option key={c} value={c}>{c}</option>
-//               ))}
-//             </select>
-//             <div>
-//               <input
-//                 type="file"
-//                 accept="image/*"
-//                 onChange={(e) => handleImageUpload(e.target.files?.[0])}
-//               />
-//               {imageData && <img src={imageData} alt="preview" className="mt-2 w-32 h-32 object-cover" />}
-//             </div>
-//             <button className="py-2 rounded text-white w-32" style={{ backgroundColor: COLORS.primary }}>Save product</button>
-//           </form>
-//         </section>
+//         <input placeholder="Product Name" onChange={(e) => setName(e.target.value)} />
+//         <input placeholder="SKU" onChange={(e) => setSku(e.target.value)} />
+//         <input placeholder="Slug" onChange={(e) => setSlug(e.target.value)} />
+//         <input placeholder="Brand" onChange={(e) => setBrand(e.target.value)} />
+//         <input placeholder="Category (Candles)" onChange={(e) => setCategory(e.target.value)} />
+//         <textarea placeholder="Description" onChange={(e) => setDescription(e.target.value)} />
 
-//         <section className="p-4 border rounded">
-//           <h2 className="font-medium mb-3">Products ({products.length})</h2>
-//           <div className="grid grid-cols-1 gap-3">
-//             {products.map((p) => (
-//               <div key={p.id} className="p-3 border rounded flex items-center gap-4">
-//                 <div className="w-20 h-20 bg-gray-50 flex items-center justify-center">
-//                   {p.image ? <img src={p.image} className="w-full h-full object-cover" /> : <div className="text-xs text-gray-400">No image</div>}
-//                 </div>
-//                 <div className="flex-1">
-//                   <div className="font-medium">{p.name}</div>
-//                   <div className="text-sm text-gray-600">{p.description}</div>
-//                   <div className="text-sm mt-1">Price: ₹{p.price} • {p.category}</div>
-//                 </div>
-//                 <div className="flex flex-col gap-2">
-//                   <button onClick={() => removeProduct(p.id)} className="px-3 py-1 rounded text-white" style={{ backgroundColor: COLORS.primary }}>Delete</button>
-//                 </div>
-//               </div>
-//             ))}
-//           </div>
-//         </section>
-//       </div>
+//         <h3 className="font-semibold">Variant</h3>
+//         <input placeholder="Weight / Size" onChange={(e) => setWeight(e.target.value)} />
+//         <input placeholder="Price" onChange={(e) => setPrice(e.target.value)} />
+//         <input placeholder="MRP" onChange={(e) => setMrp(e.target.value)} />
+//         <input placeholder="Stock" onChange={(e) => setStock(e.target.value)} />
+
+//         <h3 className="font-semibold">Specifications</h3>
+//         <input placeholder="Wax Type" onChange={(e) => setWax(e.target.value)} />
+//         <input placeholder="Wick Type" onChange={(e) => setWick(e.target.value)} />
+//         <input placeholder="Burn Time (hrs)" onChange={(e) => setBurnTime(e.target.value)} />
+//         <input placeholder="Container" onChange={(e) => setContainer(e.target.value)} />
+//         <input placeholder="Fragrance Notes (comma separated)" onChange={(e) => setFragrance(e.target.value)} />
+//         <input placeholder="Made In" onChange={(e) => setMadeIn(e.target.value)} />
+
+//         <h3 className="font-semibold">Safety</h3>
+//         <label><input type="checkbox" onChange={(e) => setChildSafe(e.target.checked)} /> Child Safe</label>
+//         <label><input type="checkbox" onChange={(e) => setPetSafe(e.target.checked)} /> Pet Safe</label>
+//         <label><input type="checkbox" defaultChecked onChange={(e) => setFlammable(e.target.checked)} /> Flammable</label>
+
+//         <textarea placeholder="Ingredients (comma separated)" onChange={(e) => setIngredients(e.target.value)} />
+//         <textarea placeholder="Care Instructions (comma separated)" onChange={(e) => setCare(e.target.value)} />
+
+//         <h3 className="font-semibold">Media</h3>
+//         <input type="file" multiple accept="image/*" onChange={(e) => handleImageUpload(e.target.files)} />
+//         <input type="file" accept="video/mp4" onChange={(e) => handleVideoUpload(e.target.files[0])} />
+
+//         <button className="py-2 text-white rounded" style={{ backgroundColor: COLORS.primary }}>
+//           Save Product
+//         </button>
+//       </form>
 //     </div>
 //   );
 // }
+
+
+
 "use client";
+import { useState } from "react";
 
-import React, { useEffect, useState } from "react";
-import { getProducts, saveProducts } from "@/utils/adminStorage";
-import { COLORS } from "@/constants/colors";
+export default function AddProduct() {
+  const [productType, setProductType] = useState("CANDLE");
 
-export default function AdminPanel() {
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState({
+    name: "",
+    sku: "",
+    slug: "",
+    category: "Candles",
+    sub_category: "Aromatherapy",
+    description: "",
+    weight: "",
+    price: "",
+    mrp: "",
+    stock: "",
+    wax: "Soy Wax",
+    wick: "Cotton",
+    burn_time: "",
+    fragrance: "",
+    container: "Glass Jar",
+    oil_type: "",
+    volume: "",
+    diffuser_type: "Reed",
+    refill: "Yes",
+    ingredients: "",
+    safety: "",
+    care: "",
+    tags: "",
+  });
 
-  const [products, setProducts] = useState([]);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+      ...(name === "name" && {
+        slug: value.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+      }),
+    }));
+  };
 
-  /* BASIC */
-  const [name, setName] = useState("");
-  const [sku, setSku] = useState("");
-  const [slug, setSlug] = useState("");
-  const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("");
-  const [brand, setBrand] = useState("");
-
-  /* VARIANT */
-  const [price, setPrice] = useState("");
-  const [mrp, setMrp] = useState("");
-  const [stock, setStock] = useState("");
-  const [weight, setWeight] = useState("");
-
-  /* SPECIFICATIONS */
-  const [wax, setWax] = useState("");
-  const [wick, setWick] = useState("");
-  const [burnTime, setBurnTime] = useState("");
-  const [container, setContainer] = useState("");
-  const [fragrance, setFragrance] = useState("");
-  const [madeIn, setMadeIn] = useState("");
-
-  /* SAFETY */
-  const [childSafe, setChildSafe] = useState(false);
-  const [petSafe, setPetSafe] = useState(false);
-  const [flammable, setFlammable] = useState(true);
-
-  /* CARE */
-  const [ingredients, setIngredients] = useState("");
-  const [care, setCare] = useState("");
-
-  /* MEDIA */
-  const [images, setImages] = useState([]);
-  const [video, setVideo] = useState("");
-
-  useEffect(() => {
-    setIsAdmin(sessionStorage.getItem("siya_is_admin") === "true");
-    setProducts(getProducts());
-  }, []);
-
-  function handleLogin(e) {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    if (password === (process.env.NEXT_PUBLIC_ADMIN_PASS || "admin123")) {
-      sessionStorage.setItem("siya_is_admin", "true");
-      setIsAdmin(true);
-    } else alert("Wrong password");
-  }
-
-  function handleImageUpload(files) {
-    Promise.all(
-      Array.from(files).map(
-        (file) =>
-          new Promise((res) => {
-            const r = new FileReader();
-            r.onload = () => res(r.result);
-            r.readAsDataURL(file);
-          })
-      )
-    ).then(setImages);
-  }
-
-  function handleVideoUpload(file) {
-    const r = new FileReader();
-    r.onload = () => setVideo(r.result);
-    r.readAsDataURL(file);
-  }
-
-  function addProduct(e) {
-    e.preventDefault();
-
-    const product = {
-      id: Date.now(),
-
-      sku,
-      slug: slug || name.toLowerCase().replace(/\s+/g, "-"),
-      name,
-      description,
-      brand,
-      category: [category],
-
-      images,
-      video,
-
-      variants: [
-        {
-          variantId: "default",
-          size: weight,
-          price: Number(price),
-          mrp: Number(mrp),
-          stock: Number(stock),
-        },
-      ],
-
-      specifications: {
-        wax,
-        wick,
-        burn_time_hours: Number(burnTime),
-        container,
-        fragrance_notes: fragrance.split(",").map((f) => f.trim()),
-        made_in: madeIn,
-      },
-
-      ingredients: ingredients.split(",").map((i) => i.trim()),
-      care_instructions: care.split(",").map((c) => c.trim()),
-
-      safety: {
-        child_safe: childSafe,
-        pet_safe: petSafe,
-        flammable,
-      },
-
-      createdAt: new Date(),
-    };
-
-    const next = [product, ...products];
-    setProducts(next);
-    saveProducts(next);
-
-    alert("Product added");
-  }
-
-  if (!isAdmin) {
-    return (
-      <form onSubmit={handleLogin} className="min-h-screen flex items-center justify-center">
-        <input
-          type="password"
-          placeholder="Admin password"
-          onChange={(e) => setPassword(e.target.value)}
-        />
-      </form>
-    );
-  }
+    console.log({ productType, ...formData });
+  };
 
   return (
-    <div className="max-w-5xl mx-auto py-10">
-      <h1 className="text-2xl font-semibold mb-6">Siyaas Admin</h1>
+    <div className="max-w-6xl mx-auto p-4 md:p-8">
+      <h1 className="text-2xl font-semibold mb-6">Add Product — Siyaas</h1>
 
-      <form onSubmit={addProduct} className="grid gap-3">
+      {/* PRODUCT TYPE SWITCH */}
+      <div className="flex gap-3 mb-6">
+        <ToggleButton
+          active={productType === "CANDLE"}
+          label="Candle"
+          onClick={() => {
+            setProductType("CANDLE");
+            setFormData((p) => ({ ...p, category: "Candles" }));
+          }}
+        />
+        <ToggleButton
+          active={productType === "DIFFUSER"}
+          label="Diffuser"
+          onClick={() => {
+            setProductType("DIFFUSER");
+            setFormData((p) => ({ ...p, category: "Diffusers" }));
+          }}
+        />
+      </div>
 
-        <input placeholder="Product Name" onChange={(e) => setName(e.target.value)} />
-        <input placeholder="SKU" onChange={(e) => setSku(e.target.value)} />
-        <input placeholder="Slug" onChange={(e) => setSlug(e.target.value)} />
-        <input placeholder="Brand" onChange={(e) => setBrand(e.target.value)} />
-        <input placeholder="Category (Candles)" onChange={(e) => setCategory(e.target.value)} />
-        <textarea placeholder="Description" onChange={(e) => setDescription(e.target.value)} />
+      <form onSubmit={handleSubmit} className="space-y-10">
+        {/* BASIC INFO */}
+        <Section title="Basic Information">
+          <Input label="Product Name" name="name" value={formData.name} onChange={handleChange} />
+          <Input label="SKU" name="sku" value={formData.sku} onChange={handleChange} />
+          <Input label="Slug" name="slug" value={formData.slug} onChange={handleChange} />
 
-        <h3 className="font-semibold">Variant</h3>
-        <input placeholder="Weight / Size" onChange={(e) => setWeight(e.target.value)} />
-        <input placeholder="Price" onChange={(e) => setPrice(e.target.value)} />
-        <input placeholder="MRP" onChange={(e) => setMrp(e.target.value)} />
-        <input placeholder="Stock" onChange={(e) => setStock(e.target.value)} />
+          <Grid>
+            <Select
+              label="Category"
+              name="category"
+              value={formData.category}
+              onChange={handleChange}
+              options={productType === "CANDLE" ? ["Candles"] : ["Diffusers"]}
+            />
+            <Select
+              label="Sub Category"
+              name="sub_category"
+              value={formData.sub_category}
+              onChange={handleChange}
+              options={
+                productType === "CANDLE"
+                  ? ["Aromatherapy", "Jar Candles", "Tin Candles"]
+                  : ["Reed Diffusers", "Electric Diffusers", "Essential Oils"]
+              }
+            />
+          </Grid>
 
-        <h3 className="font-semibold">Specifications</h3>
-        <input placeholder="Wax Type" onChange={(e) => setWax(e.target.value)} />
-        <input placeholder="Wick Type" onChange={(e) => setWick(e.target.value)} />
-        <input placeholder="Burn Time (hrs)" onChange={(e) => setBurnTime(e.target.value)} />
-        <input placeholder="Container" onChange={(e) => setContainer(e.target.value)} />
-        <input placeholder="Fragrance Notes (comma separated)" onChange={(e) => setFragrance(e.target.value)} />
-        <input placeholder="Made In" onChange={(e) => setMadeIn(e.target.value)} />
+          <Textarea label="Description" name="description" value={formData.description} onChange={handleChange} />
+        </Section>
 
-        <h3 className="font-semibold">Safety</h3>
-        <label><input type="checkbox" onChange={(e) => setChildSafe(e.target.checked)} /> Child Safe</label>
-        <label><input type="checkbox" onChange={(e) => setPetSafe(e.target.checked)} /> Pet Safe</label>
-        <label><input type="checkbox" defaultChecked onChange={(e) => setFlammable(e.target.checked)} /> Flammable</label>
+        {/* VARIANT */}
+        <Section title="Variant Details">
+          <Grid>
+            <Input label="Weight / Size" name="weight" value={formData.weight} onChange={handleChange} />
+            <Input label="Price (₹)" name="price" value={formData.price} onChange={handleChange} />
+            <Input label="MRP (₹)" name="mrp" value={formData.mrp} onChange={handleChange} />
+            <Input label="Stock" name="stock" value={formData.stock} onChange={handleChange} />
+          </Grid>
+        </Section>
 
-        <textarea placeholder="Ingredients (comma separated)" onChange={(e) => setIngredients(e.target.value)} />
-        <textarea placeholder="Care Instructions (comma separated)" onChange={(e) => setCare(e.target.value)} />
+        {/* CANDLE */}
+        {productType === "CANDLE" && (
+          <Section title="Candle Specification">
+            <Grid>
+              <Select label="Wax Type" name="wax" value={formData.wax} onChange={handleChange}
+                options={["Soy Wax", "Beeswax", "Coconut Wax", "Paraffin Wax"]} />
+              <Select label="Wick Type" name="wick" value={formData.wick} onChange={handleChange}
+                options={["Cotton", "Wooden"]} />
+            </Grid>
 
-        <h3 className="font-semibold">Media</h3>
-        <input type="file" multiple accept="image/*" onChange={(e) => handleImageUpload(e.target.files)} />
-        <input type="file" accept="video/mp4" onChange={(e) => handleVideoUpload(e.target.files[0])} />
+            <Grid>
+              <Input label="Burn Time (Hours)" name="burn_time" value={formData.burn_time} onChange={handleChange} />
+              <Input label="Fragrance Notes" name="fragrance" value={formData.fragrance} onChange={handleChange} />
+              <Select label="Container" name="container" value={formData.container} onChange={handleChange}
+                options={["Glass Jar", "Tin"]} />
+            </Grid>
+          </Section>
+        )}
 
-        <button className="py-2 text-white rounded" style={{ backgroundColor: COLORS.primary }}>
-          Save Product
+        {/* DIFFUSER */}
+        {productType === "DIFFUSER" && (
+          <Section title="Diffuser Specification">
+            <Grid>
+              <Input label="Oil Type" name="oil_type" value={formData.oil_type} onChange={handleChange} />
+              <Input label="Volume (ml)" name="volume" value={formData.volume} onChange={handleChange} />
+            </Grid>
+
+            <Grid>
+              <Select label="Diffuser Type" name="diffuser_type" value={formData.diffuser_type} onChange={handleChange}
+                options={["Reed", "Electric"]} />
+              <Select label="Refill Compatible" name="refill" value={formData.refill} onChange={handleChange}
+                options={["Yes", "No"]} />
+            </Grid>
+          </Section>
+        )}
+
+        {/* COMMON */}
+        <Section title="Common Fields">
+          <Textarea label="Ingredients" name="ingredients" value={formData.ingredients} onChange={handleChange} />
+          <Textarea label="Safety Instructions" name="safety" value={formData.safety} onChange={handleChange} />
+          <Textarea label="Care Instructions" name="care" value={formData.care} onChange={handleChange} />
+          <Input label="Tags" name="tags" value={formData.tags} onChange={handleChange} />
+        </Section>
+
+        <button
+          type="submit"
+          className="w-full md:w-fit px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition"
+        >
+          Add Product
         </button>
       </form>
     </div>
   );
 }
+
+/* ---------------- COMPONENTS ---------------- */
+
+const Section = ({ title, children }) => (
+  <section>
+    <h2 className="text-lg font-medium mb-4 border-b pb-2">{title}</h2>
+    <div className="space-y-4">{children}</div>
+  </section>
+);
+
+const Grid = ({ children }) => (
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">{children}</div>
+);
+
+const Input = ({ label, ...props }) => (
+  <div>
+    <label className="text-sm font-medium">{label}</label>
+    <input
+      {...props}
+      className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2
+                 focus:outline-none focus:ring-2 focus:ring-black"
+    />
+  </div>
+);
+
+const Textarea = ({ label, ...props }) => (
+  <div>
+    <label className="text-sm font-medium">{label}</label>
+    <textarea
+      {...props}
+      rows="4"
+      className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2
+                 focus:outline-none focus:ring-2 focus:ring-black"
+    />
+  </div>
+);
+
+const Select = ({ label, options, ...props }) => (
+  <div>
+    <label className="text-sm font-medium">{label}</label>
+    <select
+      {...props}
+      className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2
+                 focus:outline-none focus:ring-2 focus:ring-black"
+    >
+      {options.map((opt) => (
+        <option key={opt} value={opt}>{opt}</option>
+      ))}
+    </select>
+  </div>
+);
+
+const ToggleButton = ({ label, active, onClick }) => (
+  <button
+    type="button"
+    onClick={onClick}
+    className={`px-4 py-2 rounded-md border text-sm font-medium transition
+      ${active
+        ? "bg-black text-white border-black"
+        : "bg-white text-black border-gray-300 hover:bg-gray-100"}`}
+  >
+    {label}
+  </button>
+);
+
