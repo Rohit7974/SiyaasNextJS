@@ -1,166 +1,209 @@
 "use client";
+import { useState } from "react";
 
-import React, { useEffect, useState } from "react";
-import { getProducts, saveProducts, getCategories, saveCategories } from "@/utils/adminStorage";
-import { COLORS } from "@/constants/colors";
+export default function AddProduct() {
+  const [productType, setProductType] = useState("candle");
+  const [images, setImages] = useState([]);
+  const [video, setVideo] = useState(null);
 
-export default function AdminPanel() {
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [password, setPassword] = useState("");
-  const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState([]);
+  const handleImages = (e) => {
+    const files = Array.from(e.target.files);
+    setImages((prev) => [...prev, ...files]);
+  };
 
- 
-  const [name, setName] = useState("");
-  const [desc, setDesc] = useState("");
-  const [price, setPrice] = useState("");
-  const [category, setCategory] = useState("");
-  const [imageData, setImageData] = useState("");
+  const handleVideo = (e) => {
+    setVideo(e.target.files[0]);
+  };
 
-  useEffect(() => {
-    const ok = typeof window !== "undefined" && sessionStorage.getItem("siya_is_admin") === "true";
-    setIsAdmin(Boolean(ok));
-    setProducts(getProducts());
-    setCategories(getCategories());
-  }, []);
-
-  function handleLogin(e) {
-    e.preventDefault();
-    const envPass = process.env.NEXT_PUBLIC_ADMIN_PASS || "admin123";
-    if (password === envPass) {
-      sessionStorage.setItem("siya_is_admin", "true");
-      setIsAdmin(true);
-    } else {
-      alert("Incorrect password");
-    }
-  }
-
-  function handleImageUpload(file) {
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => setImageData(reader.result);
-    reader.readAsDataURL(file);
-  }
-
-  function addCategory(e) {
-    e.preventDefault();
-    if (!category) return;
-    const next = Array.from(new Set([...categories, category]));
-    setCategories(next);
-    saveCategories(next);
-    setCategory("");
-  }
-
-  function addProduct(e) {
-    e.preventDefault();
-    const prod = {
-      id: Date.now(),
-      name,
-      description: desc,
-      price,
-      category: category || (categories[0] || "default"),
-      image: imageData,
-      reviews: [],
-    };
-    const next = [prod, ...products];
-    setProducts(next);
-    saveProducts(next);
-    setName("");
-    setDesc("");
-    setPrice("");
-    setImageData("");
-  }
-
-  function removeProduct(id) {
-    const next = products.filter((p) => p.id !== id);
-    setProducts(next);
-    saveProducts(next);
-  }
-
-  if (!isAdmin) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <form onSubmit={handleLogin} className="p-8 rounded shadow max-w-sm w-full">
-          <h2 className="text-xl font-semibold mb-4">Admin Login</h2>
-          <input
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Enter admin password"
-            className="w-full p-2 border rounded mb-3"
-            type="password"
-          />
-          <button type="submit" className="w-full py-2 rounded text-white" style={{ backgroundColor: COLORS.primary }}>
-            Unlock
-          </button>
-          <p className="text-xs text-gray-500 mt-3">Set env var NEXT_PUBLIC_ADMIN_PASS to change the password.</p>
-        </form>
-      </div>
-    );
-  }
+  const removeImage = (index) => {
+    setImages(images.filter((_, i) => i !== index));
+  };
 
   return (
-    <div className="min-h-screen py-10">
-      <div className="max-w-5xl mx-auto">
-        <h1 className="text-2xl font-semibold mb-6">Admin Panel</h1>
+    <div className="max-w-6xl mx-auto p-4 md:p-8">
+      <h1 className="text-2xl font-semibold mb-6">Add Product — Siyaas</h1>
 
-        <section className="mb-6 p-4 border rounded">
-          <h2 className="font-medium mb-3">Categories</h2>
-          <form onSubmit={addCategory} className="flex gap-2">
-            <input value={category} onChange={(e) => setCategory(e.target.value)} placeholder="Category name" className="p-2 border rounded flex-1" />
-            <button className="px-4 rounded text-white" style={{ backgroundColor: COLORS.primary }}>Add</button>
-          </form>
-          <div className="mt-3 flex gap-2 flex-wrap">
-            {categories.map((c) => (
-              <span key={c} className="px-3 py-1 bg-gray-100 rounded text-sm">{c}</span>
-            ))}
-          </div>
-        </section>
+      {/* SWITCH */}
+      <div className="flex gap-4 mb-8">
+        <button
+          onClick={() => setProductType("candle")}
+          className={`px-6 py-2 rounded border ${
+            productType === "candle"
+              ? "bg-black text-white"
+              : "bg-white text-black"
+          }`}
+        >
+          Candle
+        </button>
 
-        <section className="mb-6 p-4 border rounded">
-          <h2 className="font-medium mb-3">Add Product</h2>
-          <form onSubmit={addProduct} className="grid grid-cols-1 gap-3">
-            <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Product name" className="p-2 border rounded" />
-            <textarea value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="Description" className="p-2 border rounded" />
-            <input value={price} onChange={(e) => setPrice(e.target.value)} placeholder="Price" className="p-2 border rounded" />
-            <select value={category} onChange={(e) => setCategory(e.target.value)} className="p-2 border rounded">
-              <option value="">Select category</option>
-              {categories.map((c) => (
-                <option key={c} value={c}>{c}</option>
-              ))}
-            </select>
+        <button
+          onClick={() => setProductType("diffuser")}
+          className={`px-6 py-2 rounded border ${
+            productType === "diffuser"
+              ? "bg-black text-white"
+              : "bg-white text-black"
+          }`}
+        >
+          Diffuser
+        </button>
+      </div>
+
+      {/* FORM */}
+      <form className="space-y-10">
+
+        {/* BASIC INFO */}
+        <Section title="Basic Information">
+          <Grid>
+            <Input label="Product Name" />
+            <Input label="SKU" />
+            <Input label="Slug" placeholder="auto-generate" />
+            <Select label="Category" options={["Candles", "Diffusers"]} />
+          </Grid>
+          <Textarea label="Description" />
+        </Section>
+
+        {/* PRICING */}
+        <Section title="Pricing & Stock">
+          <Grid>
+            <Input label="Price (₹)" type="number" />
+            <Input label="MRP (₹)" type="number" />
+            <Input label="Stock Quantity" type="number" />
+            <Input label="Weight / Volume" placeholder="200g / 100ml" />
+          </Grid>
+        </Section>
+
+        {/* CANDLE */}
+        {productType === "candle" && (
+          <Section title="Candle Specification">
+            <Grid>
+              <Select label="Wax Type" options={["Soy", "Beeswax", "Coconut"]} />
+              <Select label="Wick Type" options={["Cotton", "Wooden"]} />
+              <Input label="Burn Time (hrs)" type="number" />
+              <Input label="Fragrance Notes" placeholder="Lavender, Vanilla" />
+              <Select label="Container" options={["Glass Jar", "Tin"]} />
+            </Grid>
+          </Section>
+        )}
+
+       
+        {productType === "diffuser" && (
+          <Section title="Diffuser Specification">
+            <Grid>
+              <Input label="Oil Type" />
+              <Input label="Volume (ml)" type="number" />
+              <Select label="Diffuser Type" options={["Reed", "Electric"]} />
+              <Select label="Refill Available" options={["Yes", "No"]} />
+            </Grid>
+          </Section>
+        )}
+
+        <Section title="Product Media">
+          <Grid>
+          
             <div>
+              <label className="font-medium text-sm">Product Images</label>
               <input
                 type="file"
+                multiple
                 accept="image/*"
-                onChange={(e) => handleImageUpload(e.target.files?.[0])}
+                onChange={handleImages}
+                className="mt-2 w-full border rounded p-2"
               />
-              {imageData && <img src={imageData} alt="preview" className="mt-2 w-32 h-32 object-cover" />}
-            </div>
-            <button className="py-2 rounded text-white w-32" style={{ backgroundColor: COLORS.primary }}>Save product</button>
-          </form>
-        </section>
 
-        <section className="p-4 border rounded">
-          <h2 className="font-medium mb-3">Products ({products.length})</h2>
-          <div className="grid grid-cols-1 gap-3">
-            {products.map((p) => (
-              <div key={p.id} className="p-3 border rounded flex items-center gap-4">
-                <div className="w-20 h-20 bg-gray-50 flex items-center justify-center">
-                  {p.image ? <img src={p.image} className="w-full h-full object-cover" /> : <div className="text-xs text-gray-400">No image</div>}
+              {images.length > 0 && (
+                <div className="grid grid-cols-3 gap-3 mt-4">
+                  {images.map((img, idx) => (
+                    <div key={idx} className="relative">
+                      <img
+                        src={URL.createObjectURL(img)}
+                        className="h-24 w-full object-cover rounded border"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeImage(idx)}
+                        className="absolute top-1 right-1 bg-black text-white text-xs px-2 rounded"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
                 </div>
-                <div className="flex-1">
-                  <div className="font-medium">{p.name}</div>
-                  <div className="text-sm text-gray-600">{p.description}</div>
-                  <div className="text-sm mt-1">Price: ₹{p.price} • {p.category}</div>
-                </div>
-                <div className="flex flex-col gap-2">
-                  <button onClick={() => removeProduct(p.id)} className="px-3 py-1 rounded text-white" style={{ backgroundColor: COLORS.primary }}>Delete</button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      </div>
+              )}
+            </div>
+
+            
+            <div>
+              <label className="font-medium text-sm">Product Video</label>
+              <input
+                type="file"
+                accept="video/*"
+                onChange={handleVideo}
+                className="mt-2 w-full border rounded p-2"
+              />
+
+              {video && (
+                <video
+                  controls
+                  src={URL.createObjectURL(video)}
+                  className="mt-4 rounded border w-full"
+                />
+              )}
+            </div>
+          </Grid>
+        </Section>
+
+        <Section title="Additional Information">
+          <Textarea label="Ingredients" />
+          <Textarea label="Safety Instructions" />
+          <Textarea label="Care Instructions" />
+          <Input label="Tags" placeholder="lavender, soy, calm" />
+        </Section>
+
+        <button className="bg-black text-white px-8 py-3 rounded">
+          Add Product
+        </button>
+      </form>
     </div>
   );
 }
+
+
+
+const Section = ({ title, children }) => (
+  <div>
+    <h2 className="text-lg font-semibold mb-4 border-b pb-2">{title}</h2>
+    {children}
+  </div>
+);
+
+const Grid = ({ children }) => (
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">{children}</div>
+);
+
+const Input = ({ label, ...props }) => (
+  <div>
+    <label className="font-medium text-sm">{label}</label>
+    <input
+      {...props}
+      className="mt-2 w-full border rounded p-2 focus:outline-none focus:ring"
+    />
+  </div>
+);
+
+const Textarea = ({ label }) => (
+  <div>
+    <label className="font-medium text-sm">{label}</label>
+    <textarea className="mt-2 w-full border rounded p-2 h-28 focus:outline-none focus:ring" />
+  </div>
+);
+
+const Select = ({ label, options }) => (
+  <div>
+    <label className="font-medium text-sm">{label}</label>
+    <select className="mt-2 w-full border rounded p-2">
+      {options.map((o) => (
+        <option key={o}>{o}</option>
+      ))}
+    </select>
+  </div>
+);

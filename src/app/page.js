@@ -15,7 +15,7 @@ export default function Home() {
       <Products />
       <TestimonialSlider />
       <About />
-      <MarqueeBarBottom />
+      {/* <MarqueeBarBottom /> */}
     </main>
   )
 }
