@@ -487,7 +487,7 @@ const Header = () => {
           <div className="absolute left-1/2 -translate-x-1/2">
             <img
               src="/siyaas-removebg-preview.png"
-              alt="Siya logo"
+              alt="Siyaas logo"
               className="w-24 object-contain cursor-pointer hover:opacity-90 transition-opacity"
             />
           </div>

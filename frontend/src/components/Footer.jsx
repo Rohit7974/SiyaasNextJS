@@ -53,8 +53,8 @@ const Footer = () => {
             <h3 className="text-lg font-semibold mb-4">Shop</h3>
             <ul className="space-y-2">
               <li className="hover:text-gray-900 cursor-pointer">Candles</li>
-              <li className="hover:text-gray-900 cursor-pointer">Soaps</li>
-              <li className="hover:text-gray-900 cursor-pointer">Combos</li>
+              <li className="hover:text-gray-900 cursor-pointer">Diffusers</li>
+              <li className="hover:text-gray-900 cursor-pointer">Perfumes</li>
               <li className="hover:text-gray-900 cursor-pointer">Bestsellers</li>
             </ul>
           </div>
@@ -106,7 +106,7 @@ const Footer = () => {
             >
               <div className="flex items-center gap-2">
                 <MdEmail className="text-green-700" />
-                <span>siya.com</span>
+                <span>siyaas.in</span>
               </div>
 
               <a className="inline-flex items-center gap-2 bg-green-500 text-white px-5 py-2 rounded-full hover:bg-green-600">
@@ -115,7 +115,7 @@ const Footer = () => {
 
               <div className="flex items-start gap-2">
                 <MdLocationOn className="text-green-700 mt-1" />
-                <p className="text-sm">IT Park, Bhopal</p>
+                <p className="text-sm">Awadhpuri bhopal</p>
               </div>
             </div>
           </div>
@@ -123,7 +123,7 @@ const Footer = () => {
 
        
         <div className="flex flex-col md:sflex-row justify-between items-center mt-12 pt-6 border-t">
-          <p className="text-sm">© 2025 Siya. All rights reserved.</p>
+          <p className="text-sm">© 2025 Siyaas. All rights reserved.</p>
 
           <div className="flex space-x-3 mt-4 md:mt-0">
             <img src="/visa.png" className="h-6" />
