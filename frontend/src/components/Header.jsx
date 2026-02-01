@@ -498,7 +498,7 @@ const Header = () => {
               <button
                 key={i}
                 onClick={() => {
-                  if (type === "user") setIsAuthModalOpen(true);
+                  if (type === "user") window.location.href = '/auth';
                   if (type === "cart") window.location.href = '/cart';
                 }}
                 className={`transition-colors

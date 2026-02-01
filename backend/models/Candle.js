@@ -16,7 +16,7 @@ const candleSchema = new mongoose.Schema({
   fragranceNotes: { type: String },
   container: { type: String },
   images: [{ type: String }],
-  video: { type: String },
+  video: [{ type: String }],
   ingredients: { type: String },
   safetyInstructions: { type: String },
   careInstructions: { type: String },

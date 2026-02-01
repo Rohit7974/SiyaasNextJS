@@ -30,8 +30,10 @@ exports.getProducts = async (req, res) => {
     } else if (category === 'diffusers') {
       products = await Diffuser.find();
     } else {
-      // For other categories, perhaps return empty or handle
-      products = [];
+      // If no category specified, return all products from both collections
+      const candles = await Candle.find();
+      const diffusers = await Diffuser.find();
+      products = [...candles, ...diffusers];
     }
     res.json(products);
   } catch (error) {
@@ -50,6 +52,38 @@ exports.getProductById = async (req, res) => {
       return res.status(404).json({ error: 'Product not found' });
     }
     res.json(product);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.updateProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const update = req.body;
+
+    let product = await Candle.findByIdAndUpdate(id, update, { new: true, runValidators: true });
+    if (!product) {
+      product = await Diffuser.findByIdAndUpdate(id, update, { new: true, runValidators: true });
+    }
+
+    if (!product) return res.status(404).json({ error: 'Product not found' });
+
+    res.json({ message: 'Product updated', product });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+exports.deleteProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+    let product = await Candle.findByIdAndDelete(id);
+    if (!product) {
+      product = await Diffuser.findByIdAndDelete(id);
+    }
+    if (!product) return res.status(404).json({ error: 'Product not found' });
+    res.json({ message: 'Product deleted' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

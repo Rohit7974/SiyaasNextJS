@@ -14,8 +14,10 @@ app.use(express.json({ limit: '50mb' }));
 
 const authRoutes = require('./routes/auth');
 const productRoutes = require('./routes/products');
+const addressRoutes = require('./routes/addresses');
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
+app.use('/api/addresses', addressRoutes);
 
 const PORT = process.env.PORT || 4000;
 

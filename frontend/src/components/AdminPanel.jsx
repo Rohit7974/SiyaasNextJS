@@ -359,12 +359,19 @@
 
 
 "use client";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useSearchParams } from 'next/navigation';
 
 export default function AddProduct() {
   const [productType, setProductType] = useState("candle");
   const [images, setImages] = useState([]);
-  const [video, setVideo] = useState(null);
+  const [video, setVideo] = useState([]);
+
+
+  const [products, setProducts] = useState([]);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const searchParams = useSearchParams();
 
   const [name, setName] = useState('');
   const [sku, setSku] = useState('');
@@ -395,17 +402,129 @@ export default function AddProduct() {
   };
 
   const handleVideo = (e) => {
-    setVideo(e.target.files[0]);
+    const files = Array.from(e.target.files);
+    setVideo((prev) => [...(Array.isArray(prev) ? prev : (prev ? [prev] : [])), ...files]);
   };
 
   const removeImage = (index) => {
     setImages(images.filter((_, i) => i !== index));
   };
 
+  const removeVideo = (index) => {
+    setVideo(Array.isArray(video) ? video.filter((_, i) => i !== index) : null);
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  async function fetchProducts() {
+    try {
+      const candlesRes = await fetch('http://localhost:4000/api/products?category=candles');
+      const diffusersRes = await fetch('http://localhost:4000/api/products?category=diffusers');
+      const candles = candlesRes.ok ? await candlesRes.json() : [];
+      const diffusers = diffusersRes.ok ? await diffusersRes.json() : [];
+
+      const mapped = [
+        ...candles.map(p => ({ ...p, _type: 'candle' })),
+        ...diffusers.map(p => ({ ...p, _type: 'diffuser' })),
+      ];
+      setProducts(mapped);
+    } catch (err) {
+      console.error('Failed to fetch products', err);
+    }
+  }
+
+  
+
+  const handleEdit = (prod) => {
+
+    setIsEditing(true);
+    setEditingId(prod._id || prod.id);
+    setProductType(prod._type || (prod.waxType ? 'candle' : 'diffuser'));
+    setName(prod.name || '');
+    setSku(prod.sku || '');
+    setSlug(prod.slug || '');
+    setCategory(prod.category || (prod._type === 'candle' ? 'Candles' : 'Diffusers'));
+    setDescription(prod.description || '');
+    setPrice(prod.price ? String(prod.price) : '');
+    setMrp(prod.mrp ? String(prod.mrp) : '');
+    setStock(prod.stockQuantity ? String(prod.stockQuantity) : prod.stock ? String(prod.stock) : '');
+    setWeightVolume(prod.weightVolume || prod.size || '');
+    setWaxType(prod.waxType || 'Soy');
+    setWickType(prod.wickType || 'Cotton');
+    setBurnTime(prod.burnTime ? String(prod.burnTime) : '');
+    setFragranceNotes(prod.fragranceNotes || '');
+    setContainer(prod.container || 'Glass Jar');
+    setOilType(prod.oilType || '');
+    setVolume(prod.volume ? String(prod.volume) : '');
+    setDiffuserType(prod.diffuserType || 'Reed');
+    setRefill(prod.refillAvailable ? 'Yes' : 'No');
+    setIngredients(prod.ingredients || '');
+    setSafetyInstructions(prod.safetyInstructions || '');
+    setCareInstructions(prod.careInstructions || '');
+    setTags((prod.tags && prod.tags.join(',')) || '');
+    
+    // Set existing images
+    if (prod.images && Array.isArray(prod.images) && prod.images.length > 0) {
+      setImages(prod.images);
+    } else {
+      setImages([]);
+    }
+    
+    // Set existing videos (as array)
+    if (prod.video) {
+      if (Array.isArray(prod.video) && prod.video.length > 0) {
+        setVideo(prod.video);
+      } else if (typeof prod.video === 'string') {
+        setVideo([prod.video]);
+      } else {
+        setVideo([]);
+      }
+    } else {
+      setVideo([]);
+    }
+  };
+
+  const handleDelete = async (prod) => {
+    if (!confirm(`Delete ${prod.name}? This cannot be undone.`)) return;
+    try {
+      const id = prod._id || prod.id;
+      const res = await fetch(`http://localhost:4000/api/products/${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        alert('Deleted');
+        fetchProducts();
+      } else {
+        const json = await res.json();
+        alert(json.error || 'Failed to delete');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error deleting product');
+    }
+  };
+
+ 
+  useEffect(() => {
+    const editId = searchParams?.get?.('editId');
+    if (!editId) return;
+   
+    (async () => {
+      try {
+        const res = await fetch(`http://localhost:4000/api/products/${editId}`);
+        if (!res.ok) return;
+        const prod = await res.json();
+        if (prod) handleEdit(prod);
+      } catch (err) {
+        console.error('Failed to fetch product for editing', err);
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Validate required fields
     if (!name || !sku || !slug || !category || !description) {
       alert('Please fill in all required fields: Name, SKU, Slug, Category, and Description');
       return;
@@ -441,8 +560,11 @@ export default function AddProduct() {
       data.refillAvailable = refill === 'Yes';
     }
 
-    // Convert images to base64
+   
     const imagePromises = images.map(file => {
+      if (typeof file === 'string') {
+        return Promise.resolve(file); 
+      }
       return new Promise((resolve) => {
         const reader = new FileReader();
         reader.onload = () => resolve(reader.result);
@@ -451,61 +573,141 @@ export default function AddProduct() {
     });
     data.images = await Promise.all(imagePromises);
 
-    if (video) {
+   
+    if (video && Array.isArray(video) && video.length > 0) {
+      const videoPromises = video.map(vid => {
+        if (typeof vid === 'string') {
+          return Promise.resolve(vid); 
+        }
+        return new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.readAsDataURL(vid);
+        });
+      });
+      data.video = await Promise.all(videoPromises);
+    } else if (video && !Array.isArray(video)) {
+      // fallback for old single video
       const videoPromise = new Promise((resolve) => {
         const reader = new FileReader();
         reader.onload = () => resolve(reader.result);
         reader.readAsDataURL(video);
       });
-      data.video = await videoPromise;
+      data.video = [await videoPromise];
+    } else {
+      data.video = [];
     }
 
-    const endpoint = productType === 'candle' ? '/api/products/add-candle' : '/api/products/add-diffuser';
     try {
-      const response = await fetch(`http://localhost:4000${endpoint}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-      const result = await response.json();
-      if (response.ok) {
-        alert('Product added successfully');
-        // Reset form
-        setName('');
-        setSku('');
-        setSlug('');
-        setCategory('');
-        setDescription('');
-        setPrice('');
-        setMrp('');
-        setStock('');
-        setWeightVolume('');
-        setWaxType('');
-        setWickType('');
-        setBurnTime('');
-        setFragranceNotes('');
-        setContainer('');
-        setOilType('');
-        setVolume('');
-        setDiffuserType('');
-        setRefill('');
-        setIngredients('');
-        setSafetyInstructions('');
-        setCareInstructions('');
-        setTags('');
-        setImages([]);
-        setVideo(null);
+      let response, result;
+      if (isEditing && editingId) {
+        response = await fetch(`http://localhost:4000/api/products/${editingId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+        result = await response.json();
+        if (response.ok) {
+          alert('Product updated successfully');
+          setIsEditing(false);
+          setEditingId(null);
+        } else {
+          alert(result.error || 'Failed to update');
+        }
       } else {
-        alert(result.error);
+        const endpoint = productType === 'candle' ? '/api/products/add-candle' : '/api/products/add-diffuser';
+        response = await fetch(`http://localhost:4000${endpoint}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+        result = await response.json();
+        if (response.ok) {
+          alert('Product added successfully');
+        } else {
+          alert(result.error || 'Error adding product');
+        }
       }
+
+      // Reset form and refresh list
+      setName('');
+      setSku('');
+      setSlug('');
+      setCategory('Candles');
+      setDescription('');
+      setPrice('');
+      setMrp('');
+      setStock('');
+      setWeightVolume('');
+      setWaxType('');
+      setWickType('');
+      setBurnTime('');
+      setFragranceNotes('');
+      setContainer('');
+      setOilType('');
+      setVolume('');
+      setDiffuserType('');
+      setRefill('');
+      setIngredients('');
+      setSafetyInstructions('');
+      setCareInstructions('');
+      setTags('');
+      setImages([]);
+      setVideo([]);
+
+      fetchProducts();
     } catch (error) {
-      alert('Error adding product');
+      alert('Error saving product');
     }
   };
 
   return (
     <div className="max-w-6xl mx-auto p-4 md:p-8">
-      <h1 className="text-2xl font-semibold mb-6">Add Product — Siyaas</h1>
+      {isEditing ? (
+        <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl font-semibold text-yellow-900">Editing: {name}</h1>
+            <p className="text-sm text-yellow-700 mt-1">Make changes and click "Save Changes" to update</p>
+          </div>
+          <button
+            onClick={() => {
+              setIsEditing(false);
+              setEditingId(null);
+              setName('');
+              setSku('');
+              setSlug('');
+              setCategory('Candles');
+              setDescription('');
+              setPrice('');
+              setMrp('');
+              setStock('');
+              setWeightVolume('');
+              setWaxType('');
+              setWickType('');
+              setBurnTime('');
+              setFragranceNotes('');
+              setContainer('');
+              setOilType('');
+              setVolume('');
+              setDiffuserType('');
+              setRefill('');
+              setIngredients('');
+              setSafetyInstructions('');
+              setCareInstructions('');
+              setTags('');
+              setImages([]);
+              setVideo([]);
+            }}
+            className="px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700"
+          >
+            Cancel
+          </button>
+        </div>
+      ) : (
+        <h1 className="text-2xl font-semibold mb-6">Add Product — Siyaas</h1>
+      )}
+
+      {/* Featured/Reel management moved to /admin/manage */}
 
       {/* SWITCH */}
       <div className="flex gap-4 mb-8">
@@ -597,15 +799,24 @@ export default function AddProduct() {
               {images.length > 0 && (
                 <div className="grid grid-cols-3 gap-3 mt-4">
                   {images.map((img, idx) => (
-                    <div key={idx} className="relative">
-                      <img
-                        src={URL.createObjectURL(img)}
-                        className="h-24 w-full object-cover rounded border"
-                      />
+                    <div key={idx} className="relative group">
+                      {typeof img === 'string' && (img.startsWith('data:') || img.startsWith('http')) ? (
+                        <img
+                          src={img.startsWith('data:') ? img : img}
+                          alt={`preview-${idx}`}
+                          className="h-24 w-full object-cover rounded border"
+                        />
+                      ) : (
+                        <img
+                          src={URL.createObjectURL(img)}
+                          alt={`preview-${idx}`}
+                          className="h-24 w-full object-cover rounded border"
+                        />
+                      )}
                       <button
                         type="button"
                         onClick={() => removeImage(idx)}
-                        className="absolute top-1 right-1 bg-black text-white text-xs px-2 rounded"
+                        className="absolute top-1 right-1 bg-red-600 text-white text-xs px-2 py-1 rounded hover:bg-red-700 opacity-0 group-hover:opacity-100 transition"
                       >
                         ✕
                       </button>
@@ -617,20 +828,42 @@ export default function AddProduct() {
 
             
             <div>
-              <label className="font-medium text-sm">Product Video</label>
+              <label className="font-medium text-sm">Product Videos</label>
               <input
                 type="file"
+                multiple
                 accept="video/*"
                 onChange={handleVideo}
                 className="mt-2 w-full border rounded p-2"
               />
 
-              {video && (
-                <video
-                  controls
-                  src={URL.createObjectURL(video)}
-                  className="mt-4 rounded border w-full"
-                />
+              {video && Array.isArray(video) && video.length > 0 && (
+                <div className="grid grid-cols-2 gap-4 mt-4">
+                  {video.map((vid, idx) => (
+                    <div key={idx} className="relative group rounded border overflow-hidden">
+                      {typeof vid === 'string' ? (
+                        <video
+                          controls
+                          src={vid}
+                          className="w-full h-32 bg-black"
+                        />
+                      ) : (
+                        <video
+                          controls
+                          src={URL.createObjectURL(vid)}
+                          className="w-full h-32 bg-black"
+                        />
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => removeVideo(idx)}
+                        className="absolute top-2 right-2 bg-red-600 text-white text-xs px-2 py-1 rounded hover:bg-red-700 opacity-0 group-hover:opacity-100 transition"
+                      >
+                        ✕ Remove
+                      </button>
+                    </div>
+                  ))}
+                </div>
               )}
             </div>
           </Grid>
@@ -644,9 +877,12 @@ export default function AddProduct() {
         </Section>
 
         <button type="submit" className="bg-black text-white px-8 py-3 rounded">
-          Add Product
+          {isEditing ? 'Save Changes' : 'Add Product'}
         </button>
       </form>
+
+      {/* Product list and selection controls moved to /admin/manage */}
+
     </div>
   );
 }
@@ -685,8 +921,9 @@ const Select = ({ label, options, ...props }) => (
   <div>
     <label className="font-medium text-sm">{label}</label>
     <select {...props} className="mt-2 w-full border rounded p-2">
+      <option value="">-- Select {label} --</option>
       {options.map((o) => (
-        <option key={o}>{o}</option>
+        <option key={o} value={o}>{o}</option>
       ))}
     </select>
   </div>

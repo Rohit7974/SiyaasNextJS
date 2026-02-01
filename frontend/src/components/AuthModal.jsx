@@ -81,10 +81,18 @@ const AuthModal = ({ isOpen, onClose }) => {
 
     setLoading(true);
     try {
-      // Hardcoded admin login
-      if (isLogin && formData.email === 'admin@siyaas.com' && formData.password === 'admin123') {
-        localStorage.setItem('authToken', 'admin-token');
-        localStorage.setItem('user', JSON.stringify({ id: 'admin', fullName: 'Admin', email: 'admin@siyaas.com' }));
+      const email = (formData.email || '').trim();
+      const password = (formData.password || '').trim();
+
+      // Use env vars with fallback so admin login works even when .env.local isn't loaded (e.g. client-side)
+      const ADMIN_EMAIL = (process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'admin@siyaas.com').trim();
+      const ADMIN_PASSWORD = (process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'admin123').trim();
+      const ADMIN_TOKEN = (process.env.NEXT_PUBLIC_ADMIN_TOKEN || 'admin-token').trim();
+
+      if (isLogin && email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+        localStorage.setItem('token', ADMIN_TOKEN);
+        localStorage.setItem('authToken', ADMIN_TOKEN);
+        localStorage.setItem('user', JSON.stringify({ _id: 'admin', fullName: 'Admin', email: ADMIN_EMAIL }));
         alert('Admin login successful!');
         resetForm();
         onClose();
@@ -94,10 +102,10 @@ const AuthModal = ({ isOpen, onClose }) => {
 
       const endpoint = isLogin ? '/api/auth/login' : '/api/auth/signup';
       const payload = isLogin
-        ? { email: formData.email, password: formData.password }
-        : { fullName: formData.fullName, email: formData.email, password: formData.password };
+        ? { email, password }
+        : { fullName: formData.fullName?.trim(), email, password };
 
-      const response = await fetch(`http://localhost:4000${endpoint}`, { // ✅ Added API call
+      const response = await fetch(`http://localhost:4000${endpoint}`, { 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -106,11 +114,11 @@ const AuthModal = ({ isOpen, onClose }) => {
       const data = await response.json();
 
       if (!response.ok) {
-        setErrors({ submit: data.message || 'An error occurred' });
+        setErrors({ submit: data.error || data.message || 'An error occurred' });
         return;
       }
 
-      // ✅ Save token to localStorage
+     
       localStorage.setItem('authToken', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
 
@@ -149,9 +157,9 @@ const AuthModal = ({ isOpen, onClose }) => {
         onClick={onClose}
       />
 
-      {/* Modal */}
+     
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden">
-        {/* Close Button */}
+   
         <button
           onClick={onClose}
           className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 transition duration-300 text-2xl font-light z-10"
@@ -159,7 +167,7 @@ const AuthModal = ({ isOpen, onClose }) => {
           ×
         </button>
 
-        {/* Header */}
+  
         <div className="px-8 pt-8 pb-6 text-center">
           <h2 className="text-3xl font-bold text-gray-900 mb-2">
             {isLogin ? 'Welcome Back' : 'Join Us'}
@@ -171,16 +179,16 @@ const AuthModal = ({ isOpen, onClose }) => {
           </p>
         </div>
 
-        {/* Form */}
+     
         <form onSubmit={handleSubmit} className="px-8 pb-8 space-y-5">
-          {/* Error Message */}
+       
           {errors.submit && (
             <div className="p-3 bg-red-50 border border-red-200 rounded text-red-600 text-sm">
               {errors.submit}
             </div>
           )}
 
-          {/* Full Name - Signup only */}
+  
           {!isLogin && (
             <div>
               <label className="block text-sm font-medium text-gray-900 mb-2">
@@ -202,7 +210,7 @@ const AuthModal = ({ isOpen, onClose }) => {
             </div>
           )}
 
-          {/* Email */}
+        
           <div>
             <label className="block text-sm font-medium text-gray-900 mb-2">
               Email Address
@@ -222,7 +230,7 @@ const AuthModal = ({ isOpen, onClose }) => {
             )}
           </div>
 
-          {/* Password */}
+        
           <div>
             <label className="block text-sm font-medium text-gray-900 mb-2">
               Password
@@ -242,7 +250,7 @@ const AuthModal = ({ isOpen, onClose }) => {
             )}
           </div>
 
-          {/* Confirm Password - Signup only */}
+      
           {!isLogin && (
             <div>
               <label className="block text-sm font-medium text-gray-900 mb-2">
@@ -268,7 +276,7 @@ const AuthModal = ({ isOpen, onClose }) => {
             </div>
           )}
 
-          {/* Remember Me - Login only */}
+        
           {isLogin && (
             <div className="flex items-center justify-between">
               <label className="flex items-center">
@@ -286,17 +294,17 @@ const AuthModal = ({ isOpen, onClose }) => {
             </div>
           )}
 
-          {/* Submit Button */}
+          
           <button
             type="submit"
-            disabled={loading} // ✅ Added
+            disabled={loading}
             className="w-full px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 text-white font-semibold rounded-lg hover:from-amber-600 hover:to-amber-700 transition duration-300 transform hover:scale-105 mt-6 shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? 'Loading...' : isLogin ? 'Sign In' : 'Create Account'}
           </button>
         </form>
 
-        {/* Footer */}
+     
         <div className="px-8 pb-8 text-center border-t border-gray-200 pt-6">
           <p className="text-gray-600 text-sm">
             {isLogin ? "Don't have an account? " : 'Already have an account? '}
