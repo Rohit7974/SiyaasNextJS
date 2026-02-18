@@ -16,6 +16,14 @@ export default function AuthPage() {
   const [error, setError] = useState("");
   const router = useRouter();
 
+  // Helper function to set cookies
+  const setCookie = (name, value, days = 7) => {
+    const date = new Date();
+    date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+    const expires = `expires=${date.toUTCString()}`;
+    document.cookie = `${name}=${encodeURIComponent(value)}; ${expires}; path=/`;
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
@@ -31,9 +39,13 @@ export default function AuthPage() {
       const ADMIN_TOKEN = (process.env.NEXT_PUBLIC_ADMIN_TOKEN || "admin-token").trim();
 
       if (emailTrim === ADMIN_EMAIL && passwordTrim === ADMIN_PASSWORD) {
-        localStorage.setItem("user", JSON.stringify({ _id: "admin", fullName: "Admin", email: ADMIN_EMAIL }));
+        const adminUser = { _id: "admin", fullName: "Admin", email: ADMIN_EMAIL };
+        localStorage.setItem("user", JSON.stringify(adminUser));
         localStorage.setItem("token", ADMIN_TOKEN);
         localStorage.setItem("authToken", ADMIN_TOKEN);
+        // Set cookies for server-side middleware
+        setCookie("token", ADMIN_TOKEN);
+        setCookie("user", JSON.stringify(adminUser));
         alert("Admin login successful!");
         router.push("/admin");
         setLoading(false);
@@ -54,6 +66,9 @@ export default function AuthPage() {
         };
         localStorage.setItem("user", JSON.stringify(userWithId));
         localStorage.setItem("token", data.token);
+        // Set cookies for server-side middleware
+        setCookie("token", data.token);
+        setCookie("user", JSON.stringify(userWithId));
         alert("Login successful!");
         router.push("/profile");
       } else {

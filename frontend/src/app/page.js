@@ -9,10 +9,14 @@ import ReelProducts from '@/components/ReelProducts'
 export default function Home() {
   return (
     <main>
-      <Hero />
+      <section id="home">
+        <Hero />
+      </section>
       <ReelProducts />
       <Collection />
-      <Products />
+      <section id="products">
+        <Products />
+      </section>
       <TestimonialSlider />
       <About />
       {/* <MarqueeBarBottom /> */}

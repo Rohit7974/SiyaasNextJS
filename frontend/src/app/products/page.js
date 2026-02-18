@@ -35,7 +35,7 @@ export default function ProductsPage() {
   }
 
   return (
-    <section className="py-16 bg-white">
+    <section className="pt-32 pb-16 bg-white">
       <div className="container mx-auto px-4">
 
         <h2 className="text-4xl md:text-5xl font-light text-center mb-4 tracking-widest">

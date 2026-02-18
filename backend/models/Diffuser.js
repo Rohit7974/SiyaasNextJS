@@ -15,7 +15,10 @@ const diffuserSchema = new mongoose.Schema({
   diffuserType: { type: String },
   refillAvailable: { type: Boolean },
   images: [{ type: String }],
-  video: [{ type: String }],
+  video: [{
+    type: mongoose.Schema.Types.Mixed,
+    default: undefined
+  }],
   ingredients: { type: String },
   safetyInstructions: { type: String },
   careInstructions: { type: String },

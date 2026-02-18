@@ -24,7 +24,10 @@ const productSchema = new mongoose.Schema({
   refillAvailable: { type: Boolean },
   // Media
   images: [{ type: String }],
-  video: { type: String },
+  video: [{
+    type: mongoose.Schema.Types.Mixed,
+    default: undefined
+  }],
   // Additional
   ingredients: { type: String },
   safetyInstructions: { type: String },

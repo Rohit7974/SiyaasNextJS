@@ -360,18 +360,19 @@
 
 "use client";
 import React, { useEffect, useState } from "react";
-import { useSearchParams } from 'next/navigation';
 
-export default function AddProduct() {
+export default function AddProduct({ searchParams }) {
   const [productType, setProductType] = useState("candle");
   const [images, setImages] = useState([]);
   const [video, setVideo] = useState([]);
+  const [videoInputMode, setVideoInputMode] = useState("file"); // "file" or "link"
+  const [youtubeLink, setYoutubeLink] = useState("");
+  const [instagramLink, setInstagramLink] = useState("");
 
 
   const [products, setProducts] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState(null);
-  const searchParams = useSearchParams();
 
   const [name, setName] = useState('');
   const [sku, setSku] = useState('');
@@ -404,6 +405,46 @@ export default function AddProduct() {
   const handleVideo = (e) => {
     const files = Array.from(e.target.files);
     setVideo((prev) => [...(Array.isArray(prev) ? prev : (prev ? [prev] : [])), ...files]);
+  };
+
+  const extractYoutubeId = (url) => {
+    const patterns = [
+      /(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
+      /(?:youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
+    ];
+    for (let pattern of patterns) {
+      const match = url.match(pattern);
+      if (match) return match[1];
+    }
+    return null;
+  };
+
+  const handleAddYoutubeLink = () => {
+    if (!youtubeLink.trim()) {
+      alert("Please enter a YouTube link");
+      return;
+    }
+    const videoId = extractYoutubeId(youtubeLink);
+    if (!videoId) {
+      alert("Invalid YouTube URL. Use formats like:\n- https://youtube.com/watch?v=VIDEO_ID\n- https://youtu.be/VIDEO_ID");
+      return;
+    }
+    const embedUrl = `https://www.youtube.com/embed/${videoId}`;
+    setVideo((prev) => [...(Array.isArray(prev) ? prev : (prev ? [prev] : [])), { type: "youtube", url: embedUrl, original: youtubeLink }]);
+    setYoutubeLink("");
+  };
+
+  const handleAddInstagramLink = () => {
+    if (!instagramLink.trim()) {
+      alert("Please enter an Instagram link");
+      return;
+    }
+    if (!instagramLink.includes("instagram.com")) {
+      alert("Invalid Instagram URL");
+      return;
+    }
+    setVideo((prev) => [...(Array.isArray(prev) ? prev : (prev ? [prev] : [])), { type: "instagram", url: instagramLink }]);
+    setInstagramLink("");
   };
 
   const removeImage = (index) => {
@@ -439,6 +480,7 @@ export default function AddProduct() {
 
   const handleEdit = (prod) => {
 
+    console.log('Editing product:', prod);
     setIsEditing(true);
     setEditingId(prod._id || prod.id);
     setProductType(prod._type || (prod.waxType ? 'candle' : 'diffuser'));
@@ -472,16 +514,39 @@ export default function AddProduct() {
       setImages([]);
     }
     
-    // Set existing videos (as array)
+    // Set existing videos (as array) - handle both string and object formats
+    console.log('Product videos:', prod.video);
     if (prod.video) {
       if (Array.isArray(prod.video) && prod.video.length > 0) {
-        setVideo(prod.video);
+        console.log('Videos array found with', prod.video.length, 'items');
+        const processedVideos = prod.video.map((v, i) => {
+          console.log(`Video ${i}:`, v);
+          // If it's already an object with type and url, keep it
+          if (v && typeof v === 'object' && v.type) {
+            console.log(`Video ${i} is object with type:`, v.type);
+            return v;
+          }
+          // If it's a string, return as is
+          if (typeof v === 'string') {
+            console.log(`Video ${i} is string`);
+            return v;
+          }
+          return v;
+        });
+        console.log('Processed videos:', processedVideos);
+        setVideo(processedVideos);
       } else if (typeof prod.video === 'string') {
+        console.log('Video is single string');
+        setVideo([prod.video]);
+      } else if (prod.video && typeof prod.video === 'object') {
+        console.log('Video is single object');
         setVideo([prod.video]);
       } else {
+        console.log('No valid video format found');
         setVideo([]);
       }
     } else {
+      console.log('No video data in product');
       setVideo([]);
     }
   };
@@ -507,19 +572,36 @@ export default function AddProduct() {
  
   useEffect(() => {
     const editId = searchParams?.get?.('editId');
-    if (!editId) return;
+    console.log('Search params received:', { editId });
+    if (!editId) {
+      console.log('No editId found in URL');
+      return;
+    }
+    
+    console.log('Loading product with ID:', editId);
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
    
     (async () => {
       try {
-        const res = await fetch(`http://localhost:4000/api/products/${editId}`);
-        if (!res.ok) return;
+        const url = `http://localhost:4000/api/products/${editId}`;
+        console.log('Fetching from:', url);
+        const res = await fetch(url);
+        console.log('Fetch response status:', res.status);
+        
+        if (!res.ok) {
+          console.error('Failed to fetch product:', res.status);
+          return;
+        }
         const prod = await res.json();
-        if (prod) handleEdit(prod);
+        console.log('Loaded product:', prod);
+        if (prod) {
+          handleEdit(prod);
+        }
       } catch (err) {
         console.error('Failed to fetch product for editing', err);
       }
     })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
   const handleSubmit = async (e) => {
@@ -576,24 +658,42 @@ export default function AddProduct() {
    
     if (video && Array.isArray(video) && video.length > 0) {
       const videoPromises = video.map(vid => {
+        // Handle objects with type property (YouTube, Instagram, or already processed)
+        if (vid && typeof vid === 'object' && vid.type) {
+          return Promise.resolve(vid);
+        }
+        // Handle string (base64, URL, or already processed)
         if (typeof vid === 'string') {
           return Promise.resolve(vid); 
         }
-        return new Promise((resolve) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result);
-          reader.readAsDataURL(vid);
-        });
+        // Handle File objects
+        if (vid instanceof File || (vid && vid.size !== undefined)) {
+          return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.readAsDataURL(vid);
+          });
+        }
+        // Fallback - return as is
+        return Promise.resolve(vid);
       });
       data.video = await Promise.all(videoPromises);
     } else if (video && !Array.isArray(video)) {
       // fallback for old single video
-      const videoPromise = new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.readAsDataURL(video);
-      });
-      data.video = [await videoPromise];
+      if (video && typeof video === 'object' && video.type) {
+        data.video = [video];
+      } else if (typeof video === 'string') {
+        data.video = [video];
+      } else if (video instanceof File || (video && video.size !== undefined)) {
+        const videoPromise = new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.readAsDataURL(video);
+        });
+        data.video = [await videoPromise];
+      } else {
+        data.video = [];
+      }
     } else {
       data.video = [];
     }
@@ -654,6 +754,8 @@ export default function AddProduct() {
       setTags('');
       setImages([]);
       setVideo([]);
+      setYoutubeLink('');
+      setInstagramLink('');
 
       fetchProducts();
     } catch (error) {
@@ -697,6 +799,8 @@ export default function AddProduct() {
               setTags('');
               setImages([]);
               setVideo([]);
+              setYoutubeLink('');
+              setInstagramLink('');
             }}
             className="px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700"
           >
@@ -827,42 +931,156 @@ export default function AddProduct() {
             </div>
 
             
-            <div>
+            <div className="md:col-span-2">
               <label className="font-medium text-sm">Product Videos</label>
-              <input
-                type="file"
-                multiple
-                accept="video/*"
-                onChange={handleVideo}
-                className="mt-2 w-full border rounded p-2"
-              />
+              
+              {/* Video Input Mode Tabs */}
+              <div className="flex gap-2 mt-3 mb-4">
+                <button
+                  type="button"
+                  onClick={() => setVideoInputMode("file")}
+                  className={`px-4 py-2 rounded text-sm ${
+                    videoInputMode === "file"
+                      ? "bg-black text-white"
+                      : "bg-gray-200 text-black"
+                  }`}
+                >
+                  Upload File
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setVideoInputMode("link")}
+                  className={`px-4 py-2 rounded text-sm ${
+                    videoInputMode === "link"
+                      ? "bg-black text-white"
+                      : "bg-gray-200 text-black"
+                  }`}
+                >
+                  Add Link
+                </button>
+              </div>
 
-              {video && Array.isArray(video) && video.length > 0 && (
-                <div className="grid grid-cols-2 gap-4 mt-4">
-                  {video.map((vid, idx) => (
-                    <div key={idx} className="relative group rounded border overflow-hidden">
-                      {typeof vid === 'string' ? (
-                        <video
-                          controls
-                          src={vid}
-                          className="w-full h-32 bg-black"
-                        />
-                      ) : (
-                        <video
-                          controls
-                          src={URL.createObjectURL(vid)}
-                          className="w-full h-32 bg-black"
-                        />
-                      )}
+              {/* File Upload Mode */}
+              {videoInputMode === "file" && (
+                <input
+                  type="file"
+                  multiple
+                  accept="video/*"
+                  onChange={handleVideo}
+                  className="w-full border rounded p-2"
+                />
+              )}
+
+              {/* Link Input Mode */}
+              {videoInputMode === "link" && (
+                <div className="space-y-3">
+                  {/* YouTube Input */}
+                  <div>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        placeholder="YouTube link (e.g., https://youtube.com/watch?v=... or https://youtu.be/...)"
+                        value={youtubeLink}
+                        onChange={(e) => setYoutubeLink(e.target.value)}
+                        className="flex-1 border rounded p-2"
+                      />
                       <button
                         type="button"
-                        onClick={() => removeVideo(idx)}
-                        className="absolute top-2 right-2 bg-red-600 text-white text-xs px-2 py-1 rounded hover:bg-red-700 opacity-0 group-hover:opacity-100 transition"
+                        onClick={handleAddYoutubeLink}
+                        className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
                       >
-                        ✕ Remove
+                        Add YouTube
                       </button>
                     </div>
-                  ))}
+                  </div>
+
+                  {/* Instagram Input */}
+                  <div>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        placeholder="Instagram link (e.g., https://instagram.com/p/...)"
+                        value={instagramLink}
+                        onChange={(e) => setInstagramLink(e.target.value)}
+                        className="flex-1 border rounded p-2"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleAddInstagramLink}
+                        className="px-4 py-2 bg-pink-600 text-white rounded hover:bg-pink-700"
+                      >
+                        Add Instagram
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Video Preview */}
+              {video && Array.isArray(video) && video.length > 0 && (
+                <div className="grid grid-cols-2 gap-4 mt-4">
+                  {video.map((vid, idx) => {
+                    // Determine video type
+                    const isObj = vid && typeof vid === 'object';
+                    const videoType = isObj ? vid.type : null;
+                    const videoUrl = isObj ? vid.url : vid;
+                    const isYoutube = videoType === 'youtube';
+                    const isInstagram = videoType === 'instagram';
+                    const isFileVideo = !isYoutube && !isInstagram && (typeof vid === 'string');
+                    
+                    return (
+                      <div key={idx} className="relative group rounded border overflow-hidden bg-gray-100">
+                        {/* YouTube Embed */}
+                        {isYoutube && (
+                          <iframe
+                            width="100%"
+                            height="130"
+                            src={videoUrl}
+                            frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                            className="w-full h-32"
+                          />
+                        )}
+
+                        {/* Instagram Embed */}
+                        {isInstagram && (
+                          <div className="w-full h-32 bg-gray-200 flex items-center justify-center">
+                            <div className="text-center">
+                              <p className="text-sm font-medium">Instagram</p>
+                              <p className="text-xs text-gray-600 truncate px-2">{videoUrl}</p>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* File Video */}
+                        {isFileVideo && (
+                          videoUrl.startsWith('data:') || videoUrl.startsWith('http') ? (
+                            <video
+                              controls
+                              src={videoUrl}
+                              className="w-full h-32 bg-black"
+                            />
+                          ) : (
+                            <video
+                              controls
+                              src={typeof vid === 'string' ? URL.createObjectURL(vid) : videoUrl}
+                              className="w-full h-32 bg-black"
+                            />
+                          )
+                        )}
+
+                        {/* Remove Button */}
+                        <button
+                          type="button"
+                          onClick={() => removeVideo(idx)}
+                          className="absolute top-2 right-2 bg-red-600 text-white text-xs px-2 py-1 rounded hover:bg-red-700 opacity-0 group-hover:opacity-100 transition"
+                        >
+                          ✕ Remove
+                        </button>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>

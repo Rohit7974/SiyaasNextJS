@@ -20,7 +20,7 @@ export default function AdminManagePage(){
   }, [router]);
 
   return (
-    <div className="min-h-screen p-8 bg-gray-50">
+    <div className="min-h-screen pt-32 pb-8 px-8 bg-gray-50">
       <div className="max-w-6xl mx-auto">
         <h1 className="text-2xl font-semibold mb-6">Admin — Manage Products</h1>
         <ManageProducts />

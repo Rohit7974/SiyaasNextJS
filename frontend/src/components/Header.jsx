@@ -441,6 +441,22 @@ const Header = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const handleNavClick = (item) => {
+    setIsOpen(false); // Close mobile menu
+    
+    if (item.toLowerCase() === 'products') {
+      // Products button should go to /products page
+      window.location.href = '/products';
+      return;
+    }
+    
+    // For other items, scroll to section
+    const element = document.getElementById(item.toLowerCase());
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <>
       <header
@@ -468,18 +484,18 @@ const Header = () => {
           
           <nav className="hidden md:flex items-center gap-10 mr-auto">
             {navItems.map((item) => (
-              <Link
+              <button
                 key={item}
-                href={`#${item.toLowerCase()}`}
+                onClick={() => handleNavClick(item)}
                 className={`
-                  text-sm font-light tracking-widest transition-all
+                  text-sm font-light tracking-widest transition-all cursor-pointer
                   ${isScrolled
                     ? "text-black hover:text-gray-600"
                     : "text-white/80 hover:text-white"}
                 `}
               >
                 {item}
-              </Link>
+              </button>
             ))}
           </nav>
 
@@ -543,14 +559,13 @@ const Header = () => {
         {isOpen && (
           <div className="md:hidden backdrop-blur-xl bg-black/40">
             {navItems.map((item) => (
-              <Link
+              <button
                 key={item}
-                href={`#${item.toLowerCase()}`}
-                className="block px-6 py-4 text-sm tracking-widest text-white hover:bg-white/10"
-                onClick={() => setIsOpen(false)}
+                onClick={() => handleNavClick(item)}
+                className="block w-full text-left px-6 py-4 text-sm tracking-widest text-white hover:bg-white/10"
               >
                 {item}
-              </Link>
+              </button>
             ))}
           </div>
         )}
