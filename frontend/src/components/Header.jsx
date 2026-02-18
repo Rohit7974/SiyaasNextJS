@@ -436,6 +436,7 @@ const Header = () => {
   }, []);
 
   const navItems = ["Home", "Products", "About", "Contact"];
+  const [showMore, setShowMore] = useState(false);
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -497,6 +498,28 @@ const Header = () => {
                 {item}
               </button>
             ))}
+
+            {/* More dropdown */}
+            <div className="relative">
+              <button
+                onClick={() => setShowMore((s) => !s)}
+                onMouseEnter={() => setShowMore(true)}
+                className={`text-sm font-light tracking-widest transition-all cursor-pointer ${isScrolled ? 'text-black hover:text-gray-600' : 'text-white/80 hover:text-white'}`}
+              >
+                More ▾
+              </button>
+
+              {showMore && (
+                <div
+                  onMouseLeave={() => setShowMore(false)}
+                  className={`absolute right-0 mt-2 w-44 bg-white rounded shadow-lg py-2 z-50 ${isScrolled ? '' : ''}`}
+                >
+                  <Link href="/faqs" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">FAQ's</Link>
+                  <Link href="/refund-policy" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Refund Policy</Link>
+           
+                </div>
+              )}
+            </div>
           </nav>
 
         

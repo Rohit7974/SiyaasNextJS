@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import AddressForm from "@/components/AddressForm";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -25,6 +26,10 @@ export default function ProfilePage() {
     isDefault: false,
   });
   const [showAddForm, setShowAddForm] = useState(false);
+  const [showAddressModal, setShowAddressModal] = useState(false);
+  const [addressModalMode, setAddressModalMode] = useState("add");
+  const [addressModalInitial, setAddressModalInitial] = useState(null);
+  const [saveMessage, setSaveMessage] = useState("");
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
@@ -170,6 +175,25 @@ export default function ProfilePage() {
     } catch (err) {
       console.error("Failed to delete address", err);
     }
+  };
+
+  const openEditAddress = (addr) => {
+    setAddressModalMode("edit");
+    setAddressModalInitial(addr);
+    setShowAddressModal(true);
+  };
+
+  const openAddAddressModal = () => {
+    setAddressModalMode("add");
+    setAddressModalInitial(null);
+    setShowAddressModal(true);
+  };
+
+  const handleAddressSaved = (addr) => {
+    // refresh addresses
+    fetchAddresses(token);
+    setSaveMessage("Address saved successfully");
+    setTimeout(() => setSaveMessage(""), 3000);
   };
 
   const handleLogout = () => {
@@ -339,6 +363,7 @@ export default function ProfilePage() {
               {/* Addresses Tab */}
               {tab === "addresses" && (
                 <div className="bg-white rounded-lg shadow p-8">
+                  {saveMessage && <div className="mb-4 text-sm text-green-600">{saveMessage}</div>}
                   <div className="flex justify-between items-center mb-6">
                     <h2 className="text-2xl font-semibold">Saved Addresses</h2>
                     <button
@@ -509,16 +534,33 @@ export default function ProfilePage() {
                                 </span>
                               )}
                             </div>
-                            <button
-                              onClick={() => handleDeleteAddress(addr._id)}
-                              className="text-red-600 hover:text-red-700 text-sm font-medium"
-                            >
-                              Delete
-                            </button>
+                            <div className="flex flex-col items-end gap-2">
+                              <button
+                                onClick={() => openEditAddress(addr)}
+                                className="text-black border px-3 py-1 rounded text-sm font-medium"
+                              >
+                                Edit
+                              </button>
+                              <button
+                                onClick={() => handleDeleteAddress(addr._id)}
+                                className="text-red-600 hover:text-red-700 text-sm font-medium"
+                              >
+                                Delete
+                              </button>
+                            </div>
                           </div>
                         </div>
                       ))}
                     </div>
+                  )}
+                  {showAddressModal && (
+                    <AddressForm
+                      mode={addressModalMode}
+                      initialData={addressModalInitial}
+                      userId={user?._id}
+                      onClose={() => setShowAddressModal(false)}
+                      onSaved={handleAddressSaved}
+                    />
                   )}
                 </div>
               )}
