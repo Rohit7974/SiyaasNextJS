@@ -52,11 +52,19 @@ export default function AuthPage() {
         return;
       }
 
-      const response = await fetch("http://localhost:4000/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: emailTrim, password: passwordTrim }),
-      });
+      // const response = await fetch("http://localhost:4000/api/auth/login", {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify({ email: emailTrim, password: passwordTrim }),
+      // });//Commnet by rohit on 04/05/2026
+      const response = await fetch(
+  `${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`,
+  {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: emailTrim, password: passwordTrim }),
+  }
+);
 
       if (response.ok) {
         const data = await response.json();
@@ -96,11 +104,19 @@ export default function AuthPage() {
 
     try {
       // TODO: integrate with backend signup endpoint
-      const response = await fetch("http://localhost:4000/api/auth/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ fullName: name, email, password }),
-      });
+      // const response = await fetch("http://localhost:4000/api/auth/signup", {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify({ fullName: name, email, password }),
+      // });//Comment and add by rohit on 04/05/2026
+      const response = await fetch(
+  `${process.env.NEXT_PUBLIC_API_URL}/api/auth/signup`,
+  {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ fullName: name, email, password }),
+  }
+);
 
       if (response.ok) {
         // Backend returns just a message on signup, auto-login after

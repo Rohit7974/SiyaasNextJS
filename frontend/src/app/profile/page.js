@@ -53,7 +53,9 @@ export default function ProfilePage() {
 
   const fetchOrders = async (authToken) => {
     try {
-      const res = await fetch("http://localhost:4000/api/orders", {
+      // const res = await fetch("http://localhost:4000/api/orders", {
+      //comment and add by rohit
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orders`, {
         headers: { Authorization: `Bearer ${authToken}` },
       });
       if (res.ok) {
@@ -67,7 +69,8 @@ export default function ProfilePage() {
 
   const fetchAddresses = async (authToken) => {
     try {
-      const res = await fetch(`http://localhost:4000/api/addresses?userId=${user?._id}`, {
+      // const res = await fetch(`http://localhost:4000/api/addresses?userId=${user?._id}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/addresses?userId=${user?._id}`, {
         headers: { Authorization: `Bearer ${authToken}` },
       });
       if (res.ok) {
@@ -81,7 +84,8 @@ export default function ProfilePage() {
 
   const fetchAddressesForUser = async (userId, authToken) => {
     try {
-      const res = await fetch(`http://localhost:4000/api/addresses?userId=${userId}`, {
+      // const res = await fetch(`http://localhost:4000/api/addresses?userId=${userId}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/addresses?userId=${userId}`, {
         headers: { Authorization: `Bearer ${authToken}` },
       });
       if (res.ok) {
@@ -96,7 +100,8 @@ export default function ProfilePage() {
   const handleUpdateDetails = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`http://localhost:4000/api/auth/users/${user._id}`, {
+      // const res = await fetch(`http://localhost:4000/api/auth/users/${user._id}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/users/${user._id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -128,7 +133,8 @@ export default function ProfilePage() {
     }
 
     try {
-      const res = await fetch("http://localhost:4000/api/addresses", {
+      // const res = await fetch("http://localhost:4000/api/addresses", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/addresses`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -163,7 +169,8 @@ export default function ProfilePage() {
   const handleDeleteAddress = async (id) => {
     if (!confirm("Delete this address?")) return;
     try {
-      const res = await fetch(`http://localhost:4000/api/addresses/${id}`, {
+      // const res = await fetch(`http://localhost:4000/api/addresses/${id}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/addresses/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });

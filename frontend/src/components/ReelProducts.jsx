@@ -173,7 +173,10 @@ const ReelProducts = () => {
         return;
       }
 
-      const res = await fetch('http://localhost:4000/api/products');
+      // const res = await fetch('http://localhost:4000/api/products');
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products`);
+      
+
       const all = res.ok ? await res.json() : [];
 
       // Preserve admin order

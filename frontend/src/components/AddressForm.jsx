@@ -55,13 +55,15 @@ export default function AddressForm({ mode = "add", initialData = null, userId, 
       let res;
       if (mode === "edit" && initialData && (initialData._id || initialData.id)) {
         const id = initialData._id || initialData.id;
-        res = await fetch(`http://localhost:4000/api/addresses/${id}`, {
+        // res = await fetch(`http://localhost:4000/api/addresses/${id}`, {
+        res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/addresses/${id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
       } else {
-        res = await fetch("http://localhost:4000/api/addresses", {
+        // res = await fetch("http://localhost:4000/api/addresses", {
+          res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/addresses`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),

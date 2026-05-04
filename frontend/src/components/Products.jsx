@@ -26,8 +26,11 @@ const Products = () => {
       }
 
       // Fetch all products and filter by featured IDs
-      const candlesRes = await fetch('http://localhost:4000/api/products?category=candles');
-      const diffusersRes = await fetch('http://localhost:4000/api/products?category=diffusers');
+      // const candlesRes = await fetch('http://localhost:4000/api/products?category=candles');
+      const candlesRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products?category=candles`);
+      // const diffusersRes = await fetch('http://localhost:4000/api/products?category=diffusers');
+      const diffusersRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products?category=diffusers`)
+      
       
       const candles = candlesRes.ok ? await candlesRes.json() : [];
       const diffusers = diffusersRes.ok ? await diffusersRes.json() : [];

@@ -74,7 +74,8 @@ export default function ProductDetail() {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await fetch(`http://localhost:4000/api/products/${params.id}`)
+        // const response = await fetch(`http://localhost:4000/api/products/${params.id}`)
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products/${params.id}`)
         if (!response.ok) {
           throw new Error('Product not found')
         }

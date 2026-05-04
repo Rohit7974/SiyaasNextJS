@@ -11,7 +11,7 @@ const playfairDisplay = Playfair_Display({
 })
 
 export const metadata = {
-  title: 'Siya - Handcrafted Soy Candles',
+  title: 'Siyaas - Handcrafted Soy Candles',
   description: 'Luxury Scents for Every Mood',
 }
 

@@ -21,8 +21,10 @@ export default function AdminManage(){
   async function fetchAll(){
     try{
       setLoading(true);
-      const candlesRes = await fetch('http://localhost:4000/api/products?category=candles');
-      const diffusersRes = await fetch('http://localhost:4000/api/products?category=diffusers');
+      // const candlesRes = await fetch('http://localhost:4000/api/products?category=candles');
+      const candlesRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products?category=candles`);
+      // const diffusersRes = await fetch('http://localhost:4000/api/products?category=diffusers');
+      const diffusersRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products?category=diffusers`);
       const candles = candlesRes.ok ? await candlesRes.json() : [];
       const diffusers = diffusersRes.ok ? await diffusersRes.json() : [];
       const all = [...candles, ...diffusers];
@@ -54,7 +56,8 @@ export default function AdminManage(){
   async function handleDelete(id){
     if(!confirm('Delete this product?')) return;
     try{
-      const res = await fetch(`http://localhost:4000/api/products/${id}`,{method:'DELETE'});
+      // const res = await fetch(`http://localhost:4000/api/products/${id}`,{method:'DELETE'});
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products/${params.id}`)
       if(res.ok){ fetchAll(); alert('Deleted'); }
       else { const j=await res.json(); alert(j.error||'Delete failed'); }
     }catch(e){console.error(e); alert('Error deleting');}

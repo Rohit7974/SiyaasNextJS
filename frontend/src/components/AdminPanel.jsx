@@ -461,8 +461,10 @@ export default function AddProduct({ searchParams }) {
 
   async function fetchProducts() {
     try {
-      const candlesRes = await fetch('http://localhost:4000/api/products?category=candles');
-      const diffusersRes = await fetch('http://localhost:4000/api/products?category=diffusers');
+      // const candlesRes = await fetch('http://localhost:4000/api/products?category=candles');
+      const candlesRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products?category=candles`);
+      // const diffusersRes = await fetch('http://localhost:4000/api/products?category=diffusers');
+      const diffusersRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products?category=diffusers`);
       const candles = candlesRes.ok ? await candlesRes.json() : [];
       const diffusers = diffusersRes.ok ? await diffusersRes.json() : [];
 
@@ -555,7 +557,9 @@ export default function AddProduct({ searchParams }) {
     if (!confirm(`Delete ${prod.name}? This cannot be undone.`)) return;
     try {
       const id = prod._id || prod.id;
-      const res = await fetch(`http://localhost:4000/api/products/${id}`, { method: 'DELETE' });
+      // const res = await fetch(`http://localhost:4000/api/products/${id}`, { method: 'DELETE' });
+      const res = await fetch(`http://localhost:4000/api/products/${id}`, { method: 'DELETE' });k
+
       if (res.ok) {
         alert('Deleted');
         fetchProducts();
@@ -584,7 +588,8 @@ export default function AddProduct({ searchParams }) {
    
     (async () => {
       try {
-        const url = `http://localhost:4000/api/products/${editId}`;
+        // const url = `http://localhost:4000/api/products/${editId}`;
+        const url = `${process.env.NEXT_PUBLIC_API_URL}/api/products/${editId}`;
         console.log('Fetching from:', url);
         const res = await fetch(url);
         console.log('Fetch response status:', res.status);
@@ -701,7 +706,9 @@ export default function AddProduct({ searchParams }) {
     try {
       let response, result;
       if (isEditing && editingId) {
-        response = await fetch(`http://localhost:4000/api/products/${editingId}`, {
+        // response = await fetch(`http://localhost:4000/api/products/${editingId}`, {
+
+        response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products/${editingId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data),
@@ -716,7 +723,8 @@ export default function AddProduct({ searchParams }) {
         }
       } else {
         const endpoint = productType === 'candle' ? '/api/products/add-candle' : '/api/products/add-diffuser';
-        response = await fetch(`http://localhost:4000${endpoint}`, {
+        // response = await fetch(`http://localhost:4000${endpoint}`, {
+        response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${endpoint}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data),

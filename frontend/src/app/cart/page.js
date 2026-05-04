@@ -52,7 +52,8 @@ export default function Cart() {
       if (!usr) return;
       setAddressLoading(true);
       try {
-        const res = await fetch(`http://localhost:4000/api/addresses?userId=${usr._id || usr.id}`);
+        // const res = await fetch(`http://localhost:4000/api/addresses?userId=${usr._id || usr.id}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/addresses?userId=${usr._id || usr.id}`);
         if (res.ok) {
           const data = await res.json();
           console.log('Cart: fetched addresses', data);
@@ -119,7 +120,8 @@ export default function Cart() {
     // refresh addresses after save
     (async () => {
       try {
-        const res = await fetch(`http://localhost:4000/api/addresses?userId=${user._id || user.id}`);
+        // const res = await fetch(`http://localhost:4000/api/addresses?userId=${user._id || user.id}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/addresses?userId=${user._id || user.id}`);
         if (res.ok) {
           const data = await res.json();
           setAddresses(data || []);
