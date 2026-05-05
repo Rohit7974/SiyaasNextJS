@@ -1,8 +1,19 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { useParams, useRouter } from 'next/navigation'
-import { FaShoppingCart, FaHeart, FaChevronLeft, FaChevronRight, FaPlus, FaMinus, FaStar, FaStarHalfAlt, FaRegStar, FaPlay } from 'react-icons/fa'
+import { useState, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
+import {
+  FaShoppingCart,
+  FaHeart,
+  FaChevronLeft,
+  FaChevronRight,
+  FaPlus,
+  FaMinus,
+  FaStar,
+  FaStarHalfAlt,
+  FaRegStar,
+  FaPlay,
+} from "react-icons/fa";
 
 // Fake reviews data
 const fakeReviews = [
@@ -11,98 +22,108 @@ const fakeReviews = [
     name: "Priya Sharma",
     rating: 5,
     date: "December 10, 2025",
-    comment: "Absolutely love this candle! The scent is divine and lasts for hours. Perfect for my meditation sessions.",
-    verified: true
+    comment:
+      "Absolutely love this candle! The scent is divine and lasts for hours. Perfect for my meditation sessions.",
+    verified: true,
   },
   {
     id: 2,
     name: "Rajesh Kumar",
     rating: 4,
     date: "December 8, 2025",
-    comment: "Great quality candle. Burns evenly and the fragrance is not too overpowering. Would definitely recommend!",
-    verified: true
+    comment:
+      "Great quality candle. Burns evenly and the fragrance is not too overpowering. Would definitely recommend!",
+    verified: true,
   },
   {
     id: 3,
     name: "Anita Desai",
     rating: 5,
     date: "December 5, 2025",
-    comment: "This is my third purchase! The candles are handcrafted with care and the natural ingredients make all the difference.",
-    verified: true
+    comment:
+      "This is my third purchase! The candles are handcrafted with care and the natural ingredients make all the difference.",
+    verified: true,
   },
   {
     id: 4,
     name: "Vikram Singh",
     rating: 4,
     date: "December 3, 2025",
-    comment: "Nice candle with a soothing aroma. The burn time is impressive. Only wish it came in a larger size.",
-    verified: false
+    comment:
+      "Nice candle with a soothing aroma. The burn time is impressive. Only wish it came in a larger size.",
+    verified: false,
   },
   {
     id: 5,
     name: "Sneha Patel",
     rating: 5,
     date: "November 28, 2025",
-    comment: "Best candles I've ever bought! The packaging was beautiful and the scent fills my entire living room. Worth every rupee!",
-    verified: true
+    comment:
+      "Best candles I've ever bought! The packaging was beautiful and the scent fills my entire living room. Worth every rupee!",
+    verified: true,
   },
   {
     id: 6,
     name: "Arjun Mehta",
     rating: 4,
     date: "November 25, 2025",
-    comment: "Good product overall. The fragrance is authentic and natural. Delivery was quick too.",
-    verified: true
-  }
-]
+    comment:
+      "Good product overall. The fragrance is authentic and natural. Delivery was quick too.",
+    verified: true,
+  },
+];
 
 export default function ProductDetail() {
-  const params = useParams()
-  const router = useRouter()
-  const [quantity, setQuantity] = useState(1)
-  const [isWishlisted, setIsWishlisted] = useState(false)
-  const [currentMediaIndex, setCurrentMediaIndex] = useState(0)
-  const [openSection, setOpenSection] = useState(null)
-  const [userRating, setUserRating] = useState(0)
-  const [userReview, setUserReview] = useState('')
-  const [userName, setUserName] = useState('')
-  const [reviews, setReviews] = useState(fakeReviews)
-  const [product, setProduct] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [toast, setToast] = useState(null)
+  const params = useParams();
+  const router = useRouter();
+  const [quantity, setQuantity] = useState(1);
+  const [isWishlisted, setIsWishlisted] = useState(false);
+  const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
+  const [openSection, setOpenSection] = useState(null);
+  const [userRating, setUserRating] = useState(0);
+  const [userReview, setUserReview] = useState("");
+  const [userName, setUserName] = useState("");
+  const [reviews, setReviews] = useState(fakeReviews);
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [toast, setToast] = useState(null);
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         // const response = await fetch(`http://localhost:4000/api/products/${params.id}`)
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products/${params.id}`)
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/products/${params.id}`,
+        );
         if (!response.ok) {
-          throw new Error('Product not found')
+          throw new Error("Product not found");
         }
-        const data = await response.json()
+        const data = await response.json();
         // Map DB fields to component fields
-        data.fullDescription = data.description
-        data.rating = data.rating || 4.5
-        data.totalReviews = data.totalReviews || 0
-        data.burnTime = data.burnTime || '40-45 hours'
-        data.weight = data.weightVolume
-        data.ingredients = data.ingredients ? data.ingredients.split(',').map(i => i.trim()) : []
-        setProduct(data)
+        data.fullDescription = data.description;
+        data.rating = data.rating || 4.5;
+        data.totalReviews = data.totalReviews || 0;
+        data.burnTime = data.burnTime || "40-45 hours";
+        data.weight = data.weightVolume;
+        data.ingredients = data.ingredients
+          ? data.ingredients.split(",").map((i) => i.trim())
+          : [];
+        setProduct(data);
       } catch (error) {
-        console.error(error)
+        console.error(error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
-    fetchProduct()
-  }, [params.id])
+    };
+    fetchProduct();
+  }, [params.id]);
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div>Loading...</div>
       </div>
-    )
+    );
   }
 
   if (!product) {
@@ -110,27 +131,31 @@ export default function ProductDetail() {
       <div className="min-h-screen flex items-center justify-center">
         <div>Product not found</div>
       </div>
-    )
+    );
   }
-  
+
   // Star rating component
   const StarRating = ({ rating, size = 20 }) => {
-    const stars = []
-    const fullStars = Math.floor(rating)
-    const hasHalfStar = rating % 1 >= 0.5
-    
+    const stars = [];
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 >= 0.5;
+
     for (let i = 0; i < 5; i++) {
       if (i < fullStars) {
-        stars.push(<FaStar key={i} size={size} className="text-yellow-400" />)
+        stars.push(<FaStar key={i} size={size} className="text-yellow-400" />);
       } else if (i === fullStars && hasHalfStar) {
-        stars.push(<FaStarHalfAlt key={i} size={size} className="text-yellow-400" />)
+        stars.push(
+          <FaStarHalfAlt key={i} size={size} className="text-yellow-400" />,
+        );
       } else {
-        stars.push(<FaRegStar key={i} size={size} className="text-yellow-400" />)
+        stars.push(
+          <FaRegStar key={i} size={size} className="text-yellow-400" />,
+        );
       }
     }
-    
-    return <div className="flex gap-1">{stars}</div>
-  }
+
+    return <div className="flex gap-1">{stars}</div>;
+  };
 
   // Interactive star rating for review form
   const InteractiveStarRating = ({ rating, setRating }) => {
@@ -151,30 +176,39 @@ export default function ProductDetail() {
           </button>
         ))}
       </div>
-    )
-  }
+    );
+  };
 
-  const mediaList = []
-  
+  const mediaList = [];
+
   // 1. Add Images
   if (product.images && product.images.length > 0) {
-    product.images.forEach(img => mediaList.push({ type: 'image', src: img }))
+    product.images.forEach((img) =>
+      mediaList.push({ type: "image", src: img }),
+    );
   } else {
     // Fallback if no images exist at all
-    mediaList.push({ type: 'image', src: 'https://placehold.co/600x600?text=No+Image' })
+    mediaList.push({
+      type: "image",
+      src: "https://placehold.co/600x600?text=No+Image",
+    });
   }
 
   // 2. Add Video (if exists)
   if (product.video) {
-    mediaList.push({ type: 'video', src: product.video })
+    mediaList.push({ type: "video", src: product.video });
   }
- const handleNext = () => {
-    setCurrentMediaIndex((prev) => (prev === mediaList.length - 1 ? 0 : prev + 1))
-  }
+  const handleNext = () => {
+    setCurrentMediaIndex((prev) =>
+      prev === mediaList.length - 1 ? 0 : prev + 1,
+    );
+  };
 
   const handlePrev = () => {
-    setCurrentMediaIndex((prev) => (prev === 0 ? mediaList.length - 1 : prev - 1))
-  }
+    setCurrentMediaIndex((prev) =>
+      prev === 0 ? mediaList.length - 1 : prev - 1,
+    );
+  };
 
   const handleAddToCart = () => {
     const cartItem = {
@@ -182,24 +216,72 @@ export default function ProductDetail() {
       name: product.name,
       price: product.price,
       quantity: quantity,
-      image: product.images && product.images[0] ? product.images[0] : '/default.jpg'
+      image:
+        product.images && product.images[0]
+          ? product.images[0]
+          : "/default.jpg",
     };
-    const existingCart = JSON.parse(localStorage.getItem('cart') || '[]');
-    const existingIndex = existingCart.findIndex(item => item.id === cartItem.id);
+    const existingCart = JSON.parse(localStorage.getItem("cart") || "[]");
+    const existingIndex = existingCart.findIndex(
+      (item) => item.id === cartItem.id,
+    );
     if (existingIndex > -1) {
       existingCart[existingIndex].quantity += quantity;
     } else {
       existingCart.push(cartItem);
     }
-    localStorage.setItem('cart', JSON.stringify(existingCart));
-    
+    localStorage.setItem("cart", JSON.stringify(existingCart));
+
     // Dispatch custom event to update header cart count
-    window.dispatchEvent(new Event('cartUpdated'));
-    
+    window.dispatchEvent(new Event("cartUpdated"));
+
     // Show toast notification
-    setToast({ message: `Added ${quantity} ${product.name}(s) to cart!`, type: 'success' });
+    setToast({
+      message: `Added ${quantity} ${product.name}(s) to cart!`,
+      type: "success",
+    });
     setTimeout(() => setToast(null), 3000);
-  }
+  };
+
+  const handleAlert = () => {
+    const customAlert = document.createElement("div");
+
+    customAlert.innerHTML = `
+    <div style="
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #222;
+      color: #fff;
+      padding: 20px 30px;
+      font-size: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.4);
+      z-index: 1000;
+      text-align: center;
+    ">
+      Our website is currently under maintenance for order placement. To place an order, please contact us on WhatsApp. We apologize for the inconvenience and appreciate your understanding.
+      <br><br>
+      <button id="closeAlert" style="
+        padding: 8px 15px;
+        background: green;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      ">
+        OK
+      </button>
+    </div>
+  `;
+
+    document.body.appendChild(customAlert);
+
+    document.getElementById("closeAlert").onclick = () => {
+      customAlert.remove();
+    };
+  };
 
   const handleBuyNow = () => {
     const cartItem = {
@@ -207,61 +289,69 @@ export default function ProductDetail() {
       name: product.name,
       price: product.price,
       quantity: quantity,
-      image: product.images && product.images[0] ? product.images[0] : '/default.jpg'
+      image:
+        product.images && product.images[0]
+          ? product.images[0]
+          : "/default.jpg",
     };
-    const existingCart = JSON.parse(localStorage.getItem('cart') || '[]');
-    const existingIndex = existingCart.findIndex(item => item.id === cartItem.id);
+    const existingCart = JSON.parse(localStorage.getItem("cart") || "[]");
+    const existingIndex = existingCart.findIndex(
+      (item) => item.id === cartItem.id,
+    );
     if (existingIndex > -1) {
       existingCart[existingIndex].quantity += quantity;
     } else {
       existingCart.push(cartItem);
     }
-    localStorage.setItem('cart', JSON.stringify(existingCart));
-    router.push('/cart');
-  }
+    localStorage.setItem("cart", JSON.stringify(existingCart));
+    router.push("/cart");
+  };
 
   const toggleSection = (section) => {
-    setOpenSection(openSection === section ? null : section)
-  }
+    setOpenSection(openSection === section ? null : section);
+  };
 
   const handleSubmitReview = (e) => {
-    e.preventDefault()
+    e.preventDefault();
     if (userRating === 0 || !userName.trim() || !userReview.trim()) {
-      alert('Please fill in all fields and select a rating')
-      return
+      alert("Please fill in all fields and select a rating");
+      return;
     }
-    
+
     const newReview = {
       id: reviews.length + 1,
       name: userName,
       rating: userRating,
-      date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+      date: new Date().toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      }),
       comment: userReview,
-      verified: false
-    }
-    
-    setReviews([newReview, ...reviews])
-    setUserName('')
-    setUserReview('')
-    setUserRating(0)
-    alert('Thank you for your review!')
-  }
+      verified: false,
+    };
+
+    setReviews([newReview, ...reviews]);
+    setUserName("");
+    setUserReview("");
+    setUserRating(0);
+    alert("Thank you for your review!");
+  };
 
   return (
     <div className="min-h-screen pt-32 pb-16">
       <div className="container mx-auto px-4 lg:px-20">
-        
         {/* Breadcrumb */}
         <div className="mb-8 text-sm">
-          <span 
-            onClick={() => router.push('/')}
+          <span
+            onClick={() => router.push("/")}
             className="cursor-pointer hover:underline"
           >
             Home
           </span>
           <span className="mx-2">/</span>
-          <span 
-            onClick={() => router.push('/#products')}
+          <span
+            onClick={() => router.push("/#products")}
             className="cursor-pointer hover:underline"
           >
             Products
@@ -271,16 +361,13 @@ export default function ProductDetail() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          
-        {/* --- MEDIA CAROUSEL SECTION --- */}
+          {/* --- MEDIA CAROUSEL SECTION --- */}
           <div className="relative">
             <div className="bg-transparent rounded-2xl p-0 md:p-4">
-              
               {/* Main Active Media View */}
               <div className="relative overflow-hidden rounded-xl aspect-square md:aspect-[4/3] group bg-gray-100 flex items-center justify-center">
-                
                 {/* RENDER BASED ON TYPE */}
-                {mediaList[currentMediaIndex].type === 'video' ? (
+                {mediaList[currentMediaIndex].type === "video" ? (
                   <video
                     src={mediaList[currentMediaIndex].src}
                     className="w-full h-full object-cover"
@@ -300,14 +387,20 @@ export default function ProductDetail() {
 
                 {/* Left Arrow */}
                 {mediaList.length > 1 && (
-                  <button onClick={handlePrev} className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 p-2 rounded-full shadow-md z-10">
+                  <button
+                    onClick={handlePrev}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 p-2 rounded-full shadow-md z-10"
+                  >
                     <FaChevronLeft size={20} />
                   </button>
                 )}
 
                 {/* Right Arrow */}
                 {mediaList.length > 1 && (
-                  <button onClick={handleNext} className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 p-2 rounded-full shadow-md z-10">
+                  <button
+                    onClick={handleNext}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 p-2 rounded-full shadow-md z-10"
+                  >
                     <FaChevronRight size={20} />
                   </button>
                 )}
@@ -321,15 +414,22 @@ export default function ProductDetail() {
                       key={idx}
                       onClick={() => setCurrentMediaIndex(idx)}
                       className={`relative w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden border-2 transition-all ${
-                        currentMediaIndex === idx ? 'border-black opacity-100' : 'border-transparent opacity-60'
+                        currentMediaIndex === idx
+                          ? "border-black opacity-100"
+                          : "border-transparent opacity-60"
                       }`}
                     >
-                      {media.type === 'video' ? (
+                      {media.type === "video" ? (
                         <div className="w-full h-full bg-black flex items-center justify-center text-white">
-                           <FaPlay size={20} /> {/* Play Icon for video thumbnails */}
+                          <FaPlay size={20} />{" "}
+                          {/* Play Icon for video thumbnails */}
                         </div>
                       ) : (
-                        <img src={media.src} alt="thumbnail" className="w-full h-full object-cover" />
+                        <img
+                          src={media.src}
+                          alt="thumbnail"
+                          className="w-full h-full object-cover"
+                        />
                       )}
                     </button>
                   ))}
@@ -341,9 +441,9 @@ export default function ProductDetail() {
               onClick={() => setIsWishlisted(!isWishlisted)}
               className="absolute top-6 right-6 z-10 bg-white p-3 rounded-full shadow-lg hover:scale-110 transition-transform"
             >
-              <FaHeart 
-                size={24} 
-                className={isWishlisted ? 'text-red-500' : 'text-gray-300'}
+              <FaHeart
+                size={24}
+                className={isWishlisted ? "text-red-500" : "text-gray-300"}
               />
             </button>
           </div>
@@ -351,7 +451,6 @@ export default function ProductDetail() {
           {/* Product Info */}
           <div>
             <div className="rounded-2xl p-0 md:p-8">
-              
               {/* Product Name */}
               <h1 className="text-3xl md:text-4xl font-bold mb-4">
                 {product.name}
@@ -361,7 +460,9 @@ export default function ProductDetail() {
               <div className="flex items-center gap-3 mb-6">
                 <StarRating rating={product.rating} size={20} />
                 <span className="text-lg font-semibold">{product.rating}</span>
-                <span className="text-gray-500">({product.totalReviews} reviews)</span>
+                <span className="text-gray-500">
+                  ({product.totalReviews} reviews)
+                </span>
               </div>
 
               {/* Price */}
@@ -386,7 +487,7 @@ export default function ProductDetail() {
                 <label className="block text-sm font-semibold mb-2">
                   Quantity:
                 </label>
-                <div className='flex justify-between '>
+                <div className="flex justify-between ">
                   <div className="flex items-center gap-4">
                     <button
                       onClick={() => setQuantity(Math.max(1, quantity - 1))}
@@ -417,7 +518,8 @@ export default function ProductDetail() {
               {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-4">
                 <button
-                  onClick={handleBuyNow}
+                  // onClick={handleBuyNow}
+                  onClick={handleAlert}
                   className="flex-1 bg-black text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-800 transition"
                 >
                   Buy Now
@@ -441,12 +543,22 @@ export default function ProductDetail() {
                       <span className="text-2xl">✓</span>
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-bold text-lg mb-3">100% Secure Payment Guarantee</h3>
+                      <h3 className="font-bold text-lg mb-3">
+                        100% Secure Payment Guarantee
+                      </h3>
                       <div className="flex flex-wrap gap-3 items-center">
-                        <img src="/googlepay.png" alt="Google Pay" className="h-8" />
+                        <img
+                          src="/googlepay.png"
+                          alt="Google Pay"
+                          className="h-8"
+                        />
                         <img src="/paytm.png" alt="Paytm" className="h-6" />
                         <img src="/visa.png" alt="Visa" className="h-6" />
-                        <img src="/mastercard.png" alt="Mastercard" className="h-8" />
+                        <img
+                          src="/mastercard.png"
+                          alt="Mastercard"
+                          className="h-8"
+                        />
                         <img src="/rupay.png" alt="RuPay" className="h-8" />
                       </div>
                     </div>
@@ -462,34 +574,40 @@ export default function ProductDetail() {
           {/* Description */}
           <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
             <button
-              onClick={() => toggleSection('description')}
+              onClick={() => toggleSection("description")}
               className="w-full flex items-center justify-between p-6 hover:bg-gray-50 transition"
             >
               <h3 className="text-xl font-bold">Description</h3>
-              {openSection === 'description' ? <FaMinus /> : <FaPlus />}
+              {openSection === "description" ? <FaMinus /> : <FaPlus />}
             </button>
-            {openSection === 'description' && (
+            {openSection === "description" && (
               <div className="p-6 pt-0 border-t border-gray-200">
-                <p className="text-gray-700 leading-relaxed">{product.fullDescription}</p>
+                <p className="text-gray-700 leading-relaxed">
+                  {product.fullDescription}
+                </p>
               </div>
             )}
           </div>
 
-          
-
           {/* Shipping & Return */}
           <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
             <button
-              onClick={() => toggleSection('shipping')}
+              onClick={() => toggleSection("shipping")}
               className="w-full flex items-center justify-between p-6 hover:bg-gray-50 transition"
             >
               <h3 className="text-xl font-bold">Shipping & Return</h3>
-              {openSection === 'shipping' ? <FaMinus /> : <FaPlus />}
+              {openSection === "shipping" ? <FaMinus /> : <FaPlus />}
             </button>
-            {openSection === 'shipping' && (
+            {openSection === "shipping" && (
               <div className="p-6 pt-0 border-t border-gray-200 space-y-3">
-                <p className="text-gray-700"><strong>Shipping:</strong> Free shipping on orders above ₹999. Standard delivery takes 5-7 business days.</p>
-                <p className="text-gray-700"><strong>Returns:</strong> 7-day return policy. Products must be unused and in original packaging.</p>
+                <p className="text-gray-700">
+                  <strong>Shipping:</strong> Free shipping on orders above ₹999.
+                  Standard delivery takes 5-7 business days.
+                </p>
+                <p className="text-gray-700">
+                  <strong>Returns:</strong> 7-day return policy. Products must
+                  be unused and in original packaging.
+                </p>
               </div>
             )}
           </div>
@@ -497,17 +615,24 @@ export default function ProductDetail() {
           {/* Manufacturer Details */}
           <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
             <button
-              onClick={() => toggleSection('manufacturer')}
+              onClick={() => toggleSection("manufacturer")}
               className="w-full flex items-center justify-between p-6 hover:bg-gray-50 transition"
             >
               <h3 className="text-xl font-bold">Manufacturer details</h3>
-              {openSection === 'manufacturer' ? <FaMinus /> : <FaPlus />}
+              {openSection === "manufacturer" ? <FaMinus /> : <FaPlus />}
             </button>
-            {openSection === 'manufacturer' && (
+            {openSection === "manufacturer" && (
               <div className="p-6 pt-0 border-t border-gray-200 space-y-2">
-                <p className="text-gray-700"><strong>Manufacturer:</strong> Artisan Candle Co.</p>
-                <p className="text-gray-700"><strong>Address:</strong> 123 Craft Street, Mumbai, Maharashtra 400001</p>
-                <p className="text-gray-700"><strong>Contact:</strong> +91 98765 43210</p>
+                <p className="text-gray-700">
+                  <strong>Manufacturer:</strong> Artisan Candle Co.
+                </p>
+                <p className="text-gray-700">
+                  <strong>Address:</strong> 123 Craft Street, Mumbai,
+                  Maharashtra 400001
+                </p>
+                <p className="text-gray-700">
+                  <strong>Contact:</strong> +91 98765 43210
+                </p>
               </div>
             )}
           </div>
@@ -520,7 +645,9 @@ export default function ProductDetail() {
             <h2 className="text-2xl font-bold mb-6">Write a Review</h2>
             <form onSubmit={handleSubmitReview} className="space-y-6">
               <div>
-                <label className="block text-sm font-semibold mb-2">Your Name</label>
+                <label className="block text-sm font-semibold mb-2">
+                  Your Name
+                </label>
                 <input
                   type="text"
                   value={userName}
@@ -530,14 +657,21 @@ export default function ProductDetail() {
                   required
                 />
               </div>
-              
+
               <div>
-                <label className="block text-sm font-semibold mb-2">Your Rating</label>
-                <InteractiveStarRating rating={userRating} setRating={setUserRating} />
+                <label className="block text-sm font-semibold mb-2">
+                  Your Rating
+                </label>
+                <InteractiveStarRating
+                  rating={userRating}
+                  setRating={setUserRating}
+                />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold mb-2">Your Review</label>
+                <label className="block text-sm font-semibold mb-2">
+                  Your Review
+                </label>
                 <textarea
                   value={userReview}
                   onChange={(e) => setUserReview(e.target.value)}
@@ -559,10 +693,15 @@ export default function ProductDetail() {
 
           {/* Customer Reviews */}
           <div className="bg-white rounded-lg border border-gray-200 p-8">
-            <h2 className="text-2xl font-bold mb-6">Customer Reviews ({reviews.length})</h2>
+            <h2 className="text-2xl font-bold mb-6">
+              Customer Reviews ({reviews.length})
+            </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {reviews.map((review) => (
-                <div key={review.id} className="border border-gray-200 rounded-lg p-6 hover:shadow-lg transition">
+                <div
+                  key={review.id}
+                  className="border border-gray-200 rounded-lg p-6 hover:shadow-lg transition"
+                >
                   <div className="flex items-start justify-between mb-3">
                     <div>
                       <h4 className="font-semibold text-lg">{review.name}</h4>
@@ -574,21 +713,21 @@ export default function ProductDetail() {
                       </span>
                     )}
                   </div>
-                  
+
                   <div className="mb-3">
                     <StarRating rating={review.rating} size={16} />
                   </div>
-                  
-                  <p className="text-gray-700 leading-relaxed">{review.comment}</p>
+
+                  <p className="text-gray-700 leading-relaxed">
+                    {review.comment}
+                  </p>
                 </div>
               ))}
             </div>
           </div>
         </div>
-
-       
       </div>
-      
+
       {/* Toast Notification */}
       {toast && (
         <div className="fixed bottom-6 right-6 bg-green-500 text-white px-6 py-4 rounded-lg shadow-lg animate-fade-in">
@@ -596,5 +735,5 @@ export default function ProductDetail() {
         </div>
       )}
     </div>
-  )
+  );
 }

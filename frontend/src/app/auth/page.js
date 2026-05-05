@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -315,7 +315,7 @@ export default function AuthPage() {
           </div>
         </div>
       </main>
-      <Footer />
+     
     </div>
   );
 }

@@ -1,6 +1,6 @@
-'use client'
+"use client";
 
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react";
 
 const reviews = [
   {
@@ -77,40 +77,33 @@ const reviews = [
   },
 ];
 
-
-
-
 export default function ReelReviewSlider() {
-  const [index, setIndex] = useState(0)
+  const [index, setIndex] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setIndex((prev) => (prev + 1) % reviews.length)
-    }, 5000)
+      setIndex((prev) => (prev + 1) % reviews.length);
+    }, 5000);
 
-    return () => clearInterval(interval)
-  }, [])
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="w-full bg-[#8B5A2B] text-white py-16 overflow-hidden">
       <div className="max-w-6xl mx-auto text-center">
-
-        
         <div className="text-yellow-300 text-2xl mb-8 flex justify-center">
           {Array.from({ length: reviews[index].stars }).map((_, i) => (
             <span key={i}>★</span>
           ))}
         </div>
 
-       
         <div className="relative flex justify-center">
-  <div
-    className="flex transition-transform duration-700 ease-in-out"
-    style={{
-      transform: `translateX(calc(50% - ${index * 260 + 130}px))`,
-    }}
-  >
-
+          <div
+            className="flex transition-transform duration-700 ease-in-out"
+            style={{
+              transform: `translateX(calc(50% - ${index * 260 + 130}px))`,
+            }}
+          >
             {reviews.map((item, i) => (
               <div
                 key={i}
@@ -127,19 +120,17 @@ export default function ReelReviewSlider() {
                   playsInline
                 />
                 <p className="text-sm leading-relaxed text-white italic">
-  “{item.review}”
-</p>
+                  “{item.review}”
+                </p>
 
-<p className="mt-3 text-sm text-white tracking-wide">
-  — {item.author}
-</p>
-
+                <p className="mt-3 text-sm text-white tracking-wide">
+                  — {item.author}
+                </p>
               </div>
             ))}
           </div>
         </div>
 
-      
         <div className="flex justify-center mt-10 space-x-3">
           {reviews.map((_, i) => (
             <div
@@ -152,5 +143,5 @@ export default function ReelReviewSlider() {
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -132,7 +132,7 @@ const Products = () => {
         <div className="flex justify-center mt-10 md:mt-12">
           <button
             onClick={() => router.push("/products")}
-            className="bg-[#8B5A2B] text-white px-6 md:px-8 py-2 md:py-3 rounded-md hover:bg-gray-800 transition text-sm md:text-base"
+            className="bg-[#8B5A2B] cursor-pointer text-white px-6 md:px-8 py-2 md:py-3 rounded-md hover:bg-gray-800 transition text-sm md:text-base"
           >
             View all
           </button>

@@ -1,6 +1,10 @@
+"use client";
 import React from "react";
+import { useRouter } from "next/navigation";
 
 const Hero = () => {
+    const router = useRouter();
+
   return (
     <section
       id="home"
@@ -37,7 +41,9 @@ const Hero = () => {
           Luxury Scents for Every Mood
         </p>
 
-        <button className="border border-white text-white px-6 sm:px-8 py-2 sm:py-3 rounded-full font-semibold hover:bg-white hover:text-black transition duration-300">
+        <button 
+         onClick={() => router.push("/products")}
+        className="border cursor-pointer border-white text-white px-6 sm:px-8 py-2 sm:py-3 rounded-full font-semibold hover:bg-white hover:text-black transition duration-300">
           SHOP NOW
         </button>
       </div>
