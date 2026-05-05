@@ -14,8 +14,9 @@ export default function ProductsPage() {
       try {
         // const response = await fetch("http://localhost:4000/api/products");
         //Comment by rohit on 04/05/2026
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products`);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products`);
         const data = await response.json();
+  
         setProducts(data);
       } catch (error) {
         console.error("Error fetching products:", error);
@@ -25,6 +26,9 @@ export default function ProductsPage() {
     };
     fetchProducts();
   }, []);
+
+  console.log({products});
+  
 
   if (loading) {
     return (
