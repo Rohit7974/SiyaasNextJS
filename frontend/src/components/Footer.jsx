@@ -139,12 +139,12 @@ const Footer = () => {
             >
               <div className="flex items-center gap-2">
                 <MdEmail className="text-green-700" />
-                <span>siyaas.in</span>
+                <span>siyaascandles@gmail.com</span>
               </div>
 
               <div className="flex items-start gap-2">
-                <MdLocationOn className="text-green-700 mt-1" />
-                <p className="text-sm">Awadhpuri bhopal</p>
+                <MdLocationOn className="text-green-700 mt-1 text-[40px]" />
+                <p className="text-sm">88 aryan villa behind palak vihar phase 2 khajuri kalan piplani Bhopal(M.P) 462022</p>
               </div>
               <a
                 href="https://wa.me/916263799823?text=Hello%20I%20am%20interested%20in%20your%20products"

@@ -435,7 +435,12 @@ const Header = () => {
     return () => window.removeEventListener('cartUpdated', updateCartCount);
   }, []);
 
-  const navItems = ["Home", "Products", "About", "Contact"];
+  const navItems = [
+    { id: 'home', name: 'Home', route: '/' },
+    { id: 'products', name: 'Products', route: '/products' },
+    { id: 'about', name: 'About', route: '/#about' },
+    { id: 'contact', name: 'Contact', route: '/#contact' }
+  ];
   const [showMore, setShowMore] = useState(false);
 
   const scrollToTop = () => {
@@ -485,8 +490,9 @@ const Header = () => {
           
           <nav className="hidden md:flex items-center gap-10 mr-auto">
             {navItems.map((item) => (
-              <button
-                key={item}
+              <Link
+                key={item.id}
+                href={item.route}
                 onClick={() => handleNavClick(item)}
                 className={`
                   text-sm font-light tracking-widest transition-all cursor-pointer
@@ -495,8 +501,8 @@ const Header = () => {
                     : "text-white/80 hover:text-white"}
                 `}
               >
-                {item}
-              </button>
+                {item.name}
+              </Link>
             ))}
 
             {/* More dropdown */}

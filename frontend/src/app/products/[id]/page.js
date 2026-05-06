@@ -249,30 +249,52 @@ export default function ProductDetail() {
     customAlert.innerHTML = `
     <div style="
       position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: #222;
-      color: #fff;
-      padding: 20px 30px;
-      font-size: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.4);
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
       z-index: 1000;
-      text-align: center;
+      padding: 15px;
+      box-sizing: border-box;
     ">
-      Our website is currently under maintenance for order placement. To place an order, please contact us on WhatsApp. We apologize for the inconvenience and appreciate your understanding.
-      <br><br>
-      <button id="closeAlert" style="
-        padding: 8px 15px;
-        background: green;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
+      <div style="
+        background: #222;
+        color: #fff;
+        padding: 20px;
+        width: 100%;
+        max-width: 500px;
+        font-size: clamp(16px, 2vw, 20px);
+        border-radius: 12px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.4);
+        text-align: center;
+        line-height: 1.6;
       ">
-        OK
-      </button>
+        <p style="
+          margin: 0 0 20px 0;
+          word-wrap: break-word;
+        ">
+          Our website is currently under maintenance for order placement.
+          To place an order, please contact us on WhatsApp.
+        </p>
+
+        <button id="closeAlert" style="
+          padding: 10px 20px;
+          background: green;
+          color: white;
+          border: none;
+          border-radius: 6px;
+          cursor: pointer;
+          font-size: clamp(14px, 2vw, 18px);
+          width: 100%;
+          max-width: 200px;
+        ">
+          OK
+        </button>
+      </div>
     </div>
   `;
 
