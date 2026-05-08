@@ -520,8 +520,9 @@ const Header = () => {
                   onMouseLeave={() => setShowMore(false)}
                   className={`absolute right-0 mt-2 w-44 bg-white rounded shadow-lg py-2 z-50 ${isScrolled ? '' : ''}`}
                 >
+              
                   <Link href="/faqs" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">FAQ's</Link>
-                  <Link href="/refund-policy" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Refund Policy</Link>
+                  <Link href="/policys/cancellationRefund" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Refund Policy</Link>
            
                 </div>
               )}
