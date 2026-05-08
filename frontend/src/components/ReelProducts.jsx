@@ -246,59 +246,88 @@ const ReelProducts = () => {
         className="px-6 flex gap-5 overflow-x-scroll pb-4 snap-x snap-mandatory scrollbar-hide"
         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
-        {products.map((item) => {
-          const videoSrc = Array.isArray(item.video)
-            ? item.video[0]
-            : item.video;
-          return (
-            <div
-              key={item._id}
-              className="min-w-[250px] max-w-[260px] snap-start flex-shrink-0"
-            >
-              <div className="group perspective-1000">
-                <div className="transition-transform duration-300 transform-gpu hover:scale-105 rounded-xl shadow-md overflow-hidden bg-white flex flex-col">
-                  {videoSrc ? (
-                    <video
-                      src={videoSrc}
-                      autoPlay
-                      loop
-                      muted
-                      playsInline
-                      preload="metadata"
-                      className="w-full h-72 object-cover cursor-pointer"
-                      onClick={() => setActiveVideo(videoSrc)}
-                    />
-                  ) : (
-                    <div className="w-full h-72 bg-gray-100 flex items-center justify-center">
-                      No video
-                    </div>
-                  )}
+      {products.map((item) => {
+  // DEFINE INSIDE map()
+  const videoData = Array.isArray(item.video)
+    ? item.video.find(
+        (v) =>
+          v &&
+          typeof v === "object" &&
+          (v.url || v.original)
+      )
+    : item.video;
 
-                  <div className="p-3 flex flex-col justify-between flex-1">
-                    <div>
-                      <h3 className="text-sm font-medium line-clamp-2">
-                        {item.name}
-                      </h3>
-                      <p className="font-semibold text-lg mt-1">
-                        ₹{item.price}
-                      </p>
-                    </div>
+  return (
+    <div
+      key={item._id}
+      className="min-w-[250px] max-w-[260px] snap-start flex-shrink-0"
+    >
+      <div className="group perspective-1000">
+        <div className="transition-transform duration-300 transform-gpu hover:scale-105 rounded-xl shadow-md overflow-hidden bg-white flex flex-col">
 
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        router.push(`/products/${item._id}`);
-                      }}
-                      className="mt-3 cursor-pointer w-full bg-black text-white py-2 rounded-lg text-sm hover:bg-gray-900 transition"
-                    >
-                      Buy Now
-                    </button>
-                  </div>
-                </div>
-              </div>
+          {videoData ? (
+            videoData.type === "youtube" ? (
+              <iframe
+                src={videoData.url}
+                className="w-full h-72"
+                allow="autoplay; encrypted-media"
+                allowFullScreen
+              />
+            ) : videoData.type === "instagram" ? (
+              <iframe
+                src={videoData.url}
+                className="w-full h-72"
+                allow="autoplay; encrypted-media"
+                allowFullScreen
+              />
+            ) : (
+              <video
+                src={videoData.url || videoData}
+                autoPlay
+                loop
+                muted
+                playsInline
+                preload="metadata"
+                className="w-full h-72 object-cover cursor-pointer"
+                onClick={() =>
+                  setActiveVideo({
+                    url: videoData.url || videoData,
+                    type: "video",
+                  })
+                }
+              />
+            )
+          ) : (
+            <div className="w-full h-72 bg-gray-100 flex items-center justify-center">
+              No video
             </div>
-          );
-        })}
+          )}
+
+          <div className="p-3 flex flex-col justify-between flex-1">
+            <div>
+              <h3 className="text-sm font-medium line-clamp-2">
+                {item.name}
+              </h3>
+              <p className="font-semibold text-lg mt-1">
+                ₹{item.price}
+              </p>
+            </div>
+
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                router.push(`/products/${item._id}`);
+              }}
+              className="mt-3 cursor-pointer w-full bg-black text-white py-2 rounded-lg text-sm hover:bg-gray-900 transition"
+            >
+              Buy Now
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+})}
       </div>
 
       {activeVideo && (

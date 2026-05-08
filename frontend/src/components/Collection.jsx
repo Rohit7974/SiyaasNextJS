@@ -33,14 +33,14 @@ const Collection = () => {
         Explore our finest curated selections.
       </p>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4 md:px-20">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-10 px-4 md:px-20 ">
         {categories.map((item) => (
           <div
             key={item.title}
             className="flex flex-col items-center group cursor-pointer"
             onClick={() => router.push(`/categories/${item.title.toLowerCase()}`)}
           >
-            <div className="w-full aspect-square rounded-xl overflow-hidden shadow-lg">
+            <div className="w-full h-[300px] rounded-xl overflow-hidden shadow-lg">
               <iframe
                 className="w-full h-full transition-transform duration-500 group-hover:scale-105"
                 src={item.youtube}
