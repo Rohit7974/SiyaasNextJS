@@ -4,49 +4,49 @@ import React, { useState, useEffect } from "react";
 
 const reviews = [
   {
-    reel: "https://www.instagram.com/p/DQebJ4ajVHE/embed",
+    reel: "https://www.youtube.com/embed/VwiEySWuqVY",
     // author: "Aarushi Mehta",
     // review: "Soft lavender aroma, burns clean and fills the room beautifully.",
     // stars: 5,
   },
   {
-    reel: "https://www.instagram.com/p/DPa6f51jWbz/embed",
+    reel: "https://www.youtube.com/embed/JT6_UKIi1MQ/embed",
     // author: "Riyan Sood",
     // review: "Elegant jar, subtle fragrance, perfect for cozy evenings.",
     // stars: 4,
   },
   {
-    reel: "https://www.instagram.com/p/DX7AhzIzPWa/embed",
+    reel: "video/video1.mp4",
     // author: "Naina Kapoor",
     // review: "Adds warmth to the space, fragrance is balanced and calming.",
     // stars: 5,
   },
   {
-    reel: "https://www.instagram.com/p/DX9jSGhzJfl/embed",
+    reel: "https://www.youtube.com/embed/i0WXzjtYpDw",
     // author: "Karan Malhotra",
     // review: "Long burn time and premium feel, easily one of my favorites.",
     // stars: 5,
   },
   {
-    reel: "https://www.instagram.com/p/DXo9UKjDeRu/embed",
+    reel: "video/video2.mp4",
     // author: "Aarushi Mehta",
     // review: "Clean burn with no smoke, very relaxing scent.",
     // stars: 5,
   },
   {
-    reel: "https://www.instagram.com/p/DXmXOHNE0xt/embed",
+    reel: "https://www.youtube.com/embed/5LDIR4p3uLo",
     // author: "Riyan Sood",
     // review: "Looks luxurious and smells amazing without being overpowering.",
     // stars: 4,
   },
   {
-    reel: "https://www.instagram.com/p/DXE1DHwk_DP/embed",
+    reel: "video/video3.mp4",
     // author: "Naina Kapoor",
     // review: "Perfect for modern interiors, fragrance feels natural.",
     // stars: 5,
   },
   {
-    reel: "https://www.instagram.com/p/DXMpSLRDb6H/embed",
+    reel: "https://www.youtube.com/embed/Iyc5GP7Fqm4",
     // author: "Karan Malhotra",
     // review: "Even burn and rich aroma, worth every rupee.",
     // stars: 5,
