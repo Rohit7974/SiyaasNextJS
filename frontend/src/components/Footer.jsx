@@ -11,7 +11,7 @@ import {
 } from "react-icons/fa";
 import { MdEmail, MdLocationOn } from "react-icons/md";
 import { useRouter } from "next/navigation";
-
+import Link from "next/link";
 
 const Footer = () => {
   const [openPolicy, setOpenPolicy] = useState(false);
@@ -77,9 +77,24 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-semibold mb-4">Shop</h3>
             <ul className="space-y-2">
-              <li onClick={() => router.push(`/categories/candles`)} className="hover:text-gray-900 cursor-pointer">Candles</li>
-              <li onClick={() => router.push(`/categories/diffusers`)} className="hover:text-gray-900 cursor-pointer">Diffusers</li>
-              <li onClick={() => router.push(`/categories/perfumes`)} className="hover:text-gray-900 cursor-pointer">Perfumes</li>
+              <li
+                onClick={() => router.push(`/categories/candles`)}
+                className="hover:text-gray-900 cursor-pointer"
+              >
+                Candles
+              </li>
+              <li
+                onClick={() => router.push(`/categories/diffusers`)}
+                className="hover:text-gray-900 cursor-pointer"
+              >
+                Diffusers
+              </li>
+              <li
+                onClick={() => router.push(`/categories/perfumes`)}
+                className="hover:text-gray-900 cursor-pointer"
+              >
+                Perfumes
+              </li>
               <li className="hover:text-gray-900 cursor-pointer">
                 Bestsellers
               </li>
@@ -104,18 +119,26 @@ const Footer = () => {
                 ${openPolicy ? "max-h-96" : "max-h-0 md:max-h-96"}
               `}
             >
-              <li className="hover:text-gray-900 cursor-pointer">
-                Shipping Policy
-              </li>
-              <li className="hover:text-gray-900 cursor-pointer">
-                Cancellation & Refund
-              </li>
-              <li className="hover:text-gray-900 cursor-pointer">
-                Privacy Policy
-              </li>
-              <li className="hover:text-gray-900 cursor-pointer">
-                Terms & Conditions
-              </li>
+              <Link href="/policys/shippingPolicy">
+                <li className="hover:text-gray-900 cursor-pointer">
+                  Shipping Policy
+                </li>
+              </Link>
+              <Link href="/policys/cancellationRefund">
+                <li className="hover:text-gray-900 cursor-pointer">
+                  Cancellation & Refund
+                </li>
+              </Link>
+              <Link href="/policys/privacyPolicy">
+                <li className="hover:text-gray-900 cursor-pointer">
+                  Privacy Policy
+                </li>
+              </Link>
+              <Link href="/policys/termsConditions">
+                <li className="hover:text-gray-900 cursor-pointer">
+                  Terms & Conditions
+                </li>
+              </Link>
             </ul>
           </div>
 
@@ -144,7 +167,10 @@ const Footer = () => {
 
               <div className="flex items-start gap-2">
                 <MdLocationOn className="text-green-700 mt-1 text-[40px]" />
-                <p className="text-sm">88 aryan villa behind palak vihar phase 2 khajuri kalan piplani Bhopal(M.P) 462022</p>
+                <p className="text-sm">
+                  88 aryan villa behind palak vihar phase 2 khajuri kalan
+                  piplani Bhopal(M.P) 462022
+                </p>
               </div>
               <a
                 href="https://wa.me/916263799823?text=Hello%20I%20am%20interested%20in%20your%20products"
